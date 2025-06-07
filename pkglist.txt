@@ -1,3 +1,4 @@
+archlinux-xdg-menu
 curl
 dolphin
 dunst
@@ -11,9 +12,6 @@ hyprpolkitagent
 hyprsunset
 kitty
 neovim
-noto-fonts-cjk
-noto-fonts-emoji
-noto-fonts-extra
 papirus-icon-theme
 rofi
 sddm

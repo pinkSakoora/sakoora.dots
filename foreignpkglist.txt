@@ -4,6 +4,4 @@ hyprsysteminfo
 python-pywal16
 python-pywalfox
 rose-pine-hyprcursor
-spotify
-ttf-zpix
 zen-browser-bin

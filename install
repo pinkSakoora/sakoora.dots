@@ -177,7 +177,13 @@ if [[ $CONFIG == 0 ]]; then
 	else
 		mv $DOTPATH/fonts ~/.local/share/
 	fi
-	sleep 0.5
+else
+	printf "\nConfiguration is already completed.\n"
+fi
+sleep 3
+
+# 6. App defaults
+if [[ $APPDEF == 0 ]]; then
 	printf "\nSetting up app defaults for dolphin"
 	sudo update-desktop-database
 	sleep 0.5
@@ -186,19 +192,28 @@ if [[ $CONFIG == 0 ]]; then
 		sudo mv arch-applications.menu applications.menu
 		cd ~
 	fi
-	kbuildsycoca6 --noincremental
-	sed -i 's/CONFIG="0"/CONFIG="1"/' $FLAGPATH
-	printf "\nSystem configured.\n"
+	if [[ -f /etc/xdg/menus/applications.menu ]]; then
+		kbuildsycoca6 --noincremental
+		sed -i 's/APPDEF="0"/APPDEF="1"/' $FLAGPATH
+		printf "\nSystem configured.\n"
+	else
+		printf "\nPlease check if archlinux-xdg-menu is installed, then rerun install script.\nIf it is installed and this still doesn't work, report it.\n"
+	fi
 else
-	printf "\nConfiguration is completed.\n"
+	printf "\nDefaults already setup.\n"
 fi
-# 6. Hyprcursor
+# 7. Hyprcursor
 if [[ $HYPRCURSOR == 0 ]]; then
+	printf "\nDynamic cursor installation requires you to be logged into a hyprland session.\n"
 	while true; do
-    		read -p "Install a dynamic cursor? [y/n]" configyn
+    		read -p "Install dynamic cursor? [y/n]" configyn
     		case $configyn in
         		[Yy]* ) hyprpm add https://github.com/virtcode/hypr-dynamic-cursors
 				hyprpm enable dynamic-cursors
+				if [[ $? -gt 0 ]]; then
+					printf "\nInstallation of dynamic cursor failed. Have you logged into hyprland?\nExiting...\n"
+					exit
+				fi
 				sed -i 's/HYPRCURSOR="0"/HYPRCURSOR="1"/' $FLAGPATH
 				printf "\nTo disable the dynamic cursor, simply run\nhyprpm disable dynamic-cursors.\nDynamic cursor is set to tilt, to adjust it,\nedit config file in .config/hypr/configs/cursor.conf\n"
 				break;;
@@ -208,3 +223,4 @@ if [[ $HYPRCURSOR == 0 ]]; then
 	done
 fi
 printf "\nReached the end of the installation!\n"
+exit
