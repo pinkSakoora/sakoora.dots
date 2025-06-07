@@ -39,7 +39,6 @@
     "group/right": {
 	"orientation": "horizontal",
 	"modules": [
-//	    "custom/playing",
 	    "custom/text",
             "network",
 	    "group/audio",

@@ -1,68 +1,89 @@
 #!/bin/bash
 
 DOTPATH=~/.dotfiles
-FLAGPATH=~/.dotfiles/flaglist
+FLAGPATH=~/.dotfiles/flaglist.sh
 PKGLIST=~/.dotfiles/pkglist.txt
 YAYPKGLIST=~/.dotfiles/foreignpkglist.txt
 
 source $FLAGPATH
 
 cd ~
-
+clear
+cat <<"EOF"
+            _                              _       _       
+           | |                            | |     | |      
+  ___  __ _| | _____   ___  _ __ __ _   __| | ___ | |_ ___ 
+ / __|/ _` | |/ / _ \ / _ \| '__/ _` | / _` |/ _ \| __/ __|
+ \__ \ (_| |   < (_) | (_) | | | (_| || (_| | (_) | |_\__ \
+ |___/\__,_|_|\_\___/ \___/|_|  \__,_(_)__,_|\___/ \__|___/
+                                                           
+                                                           
+EOF
 # 0.5. Display current status according to flags
 printf "\nProgress:\n"
 cat $FLAGPATH
 sleep 3
-
-# 1. Enable multilib
+printf "\nIt is strongly recommended to run this script in a separate tty to prevent any unexpected behaviour\n"
 while true; do
-    read -p "Has multilib been enabled in this installation? [y/n]" multilibyn
-    case $multilibyn in
-        [Yy]* ) sed -i 's/MULTILIB="0"/MULTILIB="1"/' $FLAGPATH; $MULTILIB="1";break;;
-        [Nn]* ) break;; 
+    read -p "Proceed with installation? [y/n]" installyn
+    case $installyn in
+        [Yy]* ) break;;
+        [Nn]* ) exit;; 
         * ) echo "Input y/n.";;
     esac
 done
-if [[ $MULTILIB == 0 ]]; then
-	printf "\nEnabling multilib in /etc/pacman.conf\n"
-	sudo sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
-	sed -i 's/MULTILIB="0"/MULTILIB="1"/' $FLAGPATH
-	printf "\nMultilib enabled.\n"
-else
-	printf "\nMultilib has already been enabled.\n"
-fi
-sleep 3
 
-# 2. Install pacman packages
+# 1. Install pacman packages
 if [[ $PACMAN == 0 ]]; then
 	printf "\nInstalling all recommended packages\n"
 	sudo pacman -Sy
+	if [[ $? -gt 0 ]]; then
+		printf "\nPacman sync failed, exiting installer."
+		exit
+	fi
 	sleep 0.5
 	sudo pacman -S --needed - < $PKGLIST
-	sed -i 's/PACMAN="0"/PACMAN="1"/' $FLAGPATH
-	printf "\nPackages installed.\n"
+	if [[ $? -eq 0 ]]; then
+		sed -i 's/PACMAN="0"/PACMAN="1"/' $FLAGPATH
+		printf "\nPackages installed.\n"
+	else
+		printf "\nPackages were not installed.\n"
+		exit
+	fi
 else
 	printf "\nRequired packages have already been installed.\n"
 fi
 sleep 3
 
-# 3. Setup yay
+# 2. Setup yay
 if [[ $YAYSETUP == 0 ]]; then
-	printf "\nSetting up yay\n"
-	git clone https://aur.archlinux.org/yay.git
-	cd ~/yay
-	sleep 0.5
-	makepkg -si
-	sleep 0.5
-	cd ~
-	sed -i 's/YAYSETUP="0"/YAYSETUP="1"/' $FLAGPATH
-	printf "\nyay set up.\n"
+	while true; do
+    		read -p "Has yay been installed on this device? [y/n]" installyn
+    		case $installyn in
+        		[Yy]* ) break;;
+        		[Nn]* ) printf "\nSetting up yay\n"
+				git clone https://aur.archlinux.org/yay.git
+				if [[ $? -gt 0 ]]; then
+					printf "\nCloning into yay repository failed, exiting installer."
+					exit
+				fi
+				cd ~/yay
+				sleep 0.5
+				makepkg -si
+				sleep 0.5
+				cd ~
+				sed -i 's/YAYSETUP="0"/YAYSETUP="1"/' $FLAGPATH
+				printf "\nyay set up.\n"
+				break;;
+        		* ) echo "Input y/n.";;
+   		esac
+	done
 else
 	printf "\nyay has been previously set up.\n"
 fi
 sleep 3
 
-# 4. Install yay packages
+# 3. Install yay packages
 if [[ $YAYIN == 0 ]]; then
 	printf "\nInstalling AUR packages via yay\n"
 	yay -Y --gendb
@@ -70,6 +91,10 @@ if [[ $YAYIN == 0 ]]; then
 	yay -Syu --devel
 	sleep 0.5
 	yay -S - < $YAYPKGLIST
+	if [[ $? -gt 0 ]]; then
+		printf "\nInstallation of AUR packages failed.\n"
+		exit
+	fi
 	sed -i 's/YAYIN="0"/YAYIN="1"/' $FLAGPATH
 	printf "\nAUR packages installed.\n"
 else
@@ -77,11 +102,8 @@ else
 fi
 sleep 3
 
-# 5. zsh configuration.
+# 4. zsh configuration.
 if [[ $ZSHDEF == 0 ]]; then
-	printf "\nSetting zsh as default shell"
-	chsh -s /bin/zsh
-	sleep 0.5
 	printf "\nInstalling oh-my-zsh"
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 	sleep 0.5
@@ -93,8 +115,7 @@ else
 fi
 sleep 3
 
-# 6. Configs
-printf "\nIt is recommended to execute the following in a different tty as the configs will be changed.\n"
+# 5. Configs
 while true; do
     read -p "Proceed with changing configs? [y/n]" configyn
     case $configyn in
@@ -127,7 +148,12 @@ if [[ $CONFIG == 0 ]]; then
 	printf "\nOld config files have been renamed to [config_folder]-pre-sakoora.\n"
 	sleep 0.5
 	printf "\nMoving config files from .dotfiles to required location"
-	mv $DOTPATH/.config ~
+	mv $DOTPATH/.config/hypr ~/.config/
+	mv $DOTPATH/.config/dunst ~/.config/
+	mv $DOTPATH/.config/fastfetch ~/.config/
+	mv $DOTPATH/.config/kitty ~/.config/
+	mv $DOTPATH/.config/waybar ~/.config/
+	mv $DOTPATH/.config/rofi ~/.config/
 	sleep 0.5
 	printf "\nMoving wallpapers"
 	if [[ -d ~/Pictures ]]; then
@@ -137,11 +163,20 @@ if [[ $CONFIG == 0 ]]; then
 	fi
 	if [[ -d ~/Pictures/Wallpapers/ ]]; then
 		printf "\nWallpapers directory already exists...\n"
+		mv $DOTPATH/Wallpapers/* ~/Pictures/Wallpapers/
 	else
 		mkdir ~/Pictures/Wallpapers
+		mv $DOTPATH/Wallpapers ~/Pictures
 	fi
-	mv $DOTPATH/Wallpapers ~/Pictures/Wallpapers
-	printf "\nSet a wallpaper using wallset command in terminal. wallset runs\n pywal which is needed for waybar to load. After running wallset, launch waybar \n using bind \$SUPER (set to win key) + W\n"
+	printf "\nSet a wallpaper using wallset command in terminal. wallset runs\n pywal which is needed for waybar to load."
+	sleep 0.5
+	printf "\nMoving required font files to ~/.local/share/fonts/\n"
+	if [[ -d ~/.local/share/fonts/ ]]; then
+		printf "\nFonts directory already exists...\n"
+		mv $DOTPATH/fonts/* ~/.local/share/fonts/
+	else
+		mv $DOTPATH/fonts ~/.local/share/
+	fi
 	sleep 0.5
 	printf "\nSetting up app defaults for dolphin"
 	sudo update-desktop-database
@@ -156,5 +191,20 @@ if [[ $CONFIG == 0 ]]; then
 	printf "\nSystem configured.\n"
 else
 	printf "\nConfiguration is completed.\n"
+fi
+# 6. Hyprcursor
+if [[ $HYPRCURSOR == 0 ]]; then
+	while true; do
+    		read -p "Install a dynamic cursor? [y/n]" configyn
+    		case $configyn in
+        		[Yy]* ) hyprpm add https://github.com/virtcode/hypr-dynamic-cursors
+				hyprpm enable dynamic-cursors
+				sed -i 's/HYPRCURSOR="0"/HYPRCURSOR="1"/' $FLAGPATH
+				printf "\nTo disable the dynamic cursor, simply run\nhyprpm disable dynamic-cursors.\nDynamic cursor is set to tilt, to adjust it,\nedit config file in .config/hypr/configs/cursor.conf\n"
+				break;;
+        		[Nn]* ) break;; 
+        		* ) echo "Input y/n.";;
+    		esac
+	done
 fi
 printf "\nReached the end of the installation!\n"

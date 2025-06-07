@@ -1,7 +1,0 @@
-#!/bin/bash
-
-PACMAN="0"
-YAYSETUP="0"
-YAYIN="0"
-ZSHDEF="0"
-CONFIG="0"
