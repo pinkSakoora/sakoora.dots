@@ -108,6 +108,7 @@ if [[ $ZSHDEF == 0 ]]; then
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 	sleep 0.5
 	cat ~/.dotfiles/.zshalias >> ~/.dotfiles/.zshrc
+	sudo chsh -s /usr/bin/zsh $USER
 	sed -i 's/ZSHDEF="0"/ZSHDEF="1"/' $FLAGPATH
 	printf "\nzsh set up.\n"
 else
@@ -205,6 +206,7 @@ fi
 # 7. Hyprcursor
 if [[ $HYPRCURSOR == 0 ]]; then
 	printf "\nDynamic cursor installation requires you to be logged into a hyprland session.\n"
+	if hyprctl monitors > /dev/null 2>&1; then
 	while true; do
     		read -p "Install dynamic cursor? [y/n]" configyn
     		case $configyn in
@@ -221,6 +223,9 @@ if [[ $HYPRCURSOR == 0 ]]; then
         		* ) echo "Input y/n.";;
     		esac
 	done
+	else
+		echo "Hyprland is not running."
+	fi
 fi
 printf "\nReached the end of the installation!\n"
 exit

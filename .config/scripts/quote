@@ -1,0 +1,18 @@
+#!/bin/bash
+
+QUOTE_FILE="/home/$USER/.config/hypr/quotes.txt"
+
+if [[ ! -f "$QUOTE_FILE" ]]; then
+	echo "$QUOTE_FILE not found"
+	exit 1
+fi
+
+# Get the number of lines in the quote file
+NUM_LINES=$(wc -l < "$QUOTE_FILE")
+
+# Generate a random line number
+RANDOM_LINE=$((RANDOM % NUM_LINES + 1))
+
+# Extract the random line and print it
+QUOTE=$(sed -n "${RANDOM_LINE}p" "$QUOTE_FILE")
+echo "$QUOTE"
