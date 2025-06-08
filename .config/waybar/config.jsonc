@@ -10,9 +10,9 @@
     "modules-left": [
         "hyprland/workspaces"
     ],
-//    "modules-center": [
-//	"hyprland/window"
-//    ],
+    "modules-center": [
+	"hyprland/window"
+    ],
     "modules-right": [
 	"group/right"
     ],
@@ -39,6 +39,7 @@
     "group/right": {
 	"orientation": "horizontal",
 	"modules": [
+//	    "custom/playing",
 	    "custom/text",
             "network",
 	    "group/audio",

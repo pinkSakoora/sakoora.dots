@@ -20,11 +20,11 @@
     "hyprland/submap": {
         "format": "<span style=\"italic\">{}</span>"
     },
-//    "hyprland/window": {
-//        "format": "{title}",
-//	"icon": true,
-//	"icon-size": 24
-//    },
+    "hyprland/window": {
+        "format": "{title}",
+	"icon": true,
+	"icon-size": 24
+    },
     "battery": {
         "interval": 60,
         "states": {
@@ -76,7 +76,7 @@
         "orientation": "horizontal"
     },
     "pulseaudio": {
-	"format": ""
+	"format": ""
     },
     "custom/text": {
 	"format": "Hyvä Suomi!",

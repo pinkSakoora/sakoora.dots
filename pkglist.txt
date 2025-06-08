@@ -1,8 +1,11 @@
 archlinux-xdg-menu
+cmake
+cpio
 curl
 dolphin
 dunst
 fastfetch
+gcc
 gnome-keyring
 hypridle
 hyprland
@@ -11,8 +14,10 @@ hyprpicker
 hyprpolkitagent
 hyprsunset
 kitty
+meson
 neovim
 papirus-icon-theme
+pkg-config
 rofi
 sddm
 swww
