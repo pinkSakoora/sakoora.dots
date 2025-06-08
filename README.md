@@ -19,5 +19,5 @@ git clone https://github.com/pinkSakoora/.dotfiles ~/.dotfiles
 ## Notes
 - Run the whole thing in a separate tty (than hyprland) for the least hassle.
 - `install` adds the `wallset` alias from `.zshalias` to your new `.zshrc`. Use `wallset` at least once to generate a pywal scheme
-  for waybar to use (if you hadn't used pywal before). Then use keybind `SUPER+W` to reload waybar.
-- All pre-existing hyprland, dunst, rofi, waybar, fastfetch and kitty configs are renamed to have a suffix of `-pre-sakoora`.
+  for waybar to use (if you hadn't used pywal before).
+- All pre-existing hyprland, dunst, rofi, waybar, fastfetch and kitty config folders are renamed to have a suffix of `-pre-sakoora`.
