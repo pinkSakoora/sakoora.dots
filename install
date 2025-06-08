@@ -104,10 +104,10 @@ sleep 3
 
 # 4. zsh configuration.
 if [[ $ZSHDEF == 0 ]]; then
-	printf "\nInstalling oh-my-zsh"
+	printf "\nInstalling oh-my-zsh\n"
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 	sleep 0.5
-	cat ~/.dotfiles/.zshalias >> ~/.dotfiles/.zshrc
+	cat ~/.dotfiles/.zshalias >> ~/.zshrc
 	sudo chsh -s /usr/bin/zsh $USER
 	sed -i 's/ZSHDEF="0"/ZSHDEF="1"/' $FLAGPATH
 	printf "\nzsh set up.\n"
@@ -143,10 +143,10 @@ if [[ $CONFIG == 0 ]]; then
 	if [[ -d ~/.config/waybar ]]; then
 		mv ~/.config/waybar ~/.config/waybar$SUFFIX
 	fi
-	if [[ -f ~/.config/rofi ]]; then
+	if [[ -d ~/.config/rofi ]]; then
 		mv ~/.config/rofi ~/.config/rofi$SUFFIX
 	fi
-	if [[ -f ~/.config/scripts ]]; then
+	if [[ -d ~/.config/scripts ]]; then
 		mv ~/.config/scripts ~/config/scripts$SUFFIX
 	fi
 	printf "\nOld config files have been renamed to [config_folder]-pre-sakoora.\n"
@@ -166,7 +166,7 @@ if [[ $CONFIG == 0 ]]; then
 	else
 		mkdir ~/Pictures
 	fi
-	if [[ -d ~/Pictures/Wallpapers/ ]]; then
+	if [[ -d ~/Pictures/Wallpapers ]]; then
 		printf "\nWallpapers directory already exists...\n"
 		mv $DOTPATH/Wallpapers/* ~/Pictures/Wallpapers/
 	else
@@ -176,10 +176,13 @@ if [[ $CONFIG == 0 ]]; then
 	printf "\nSet a wallpaper using wallset command in terminal. wallset runs\n pywal which is needed for waybar to load."
 	sleep 0.5
 	printf "\nMoving required font files to ~/.local/share/fonts/\n"
-	if [[ -d ~/.local/share/fonts/ ]]; then
+	if [[ -d ~/.local/share/fonts ]]; then
 		printf "\nFonts directory already exists...\n"
 		mv $DOTPATH/fonts/* ~/.local/share/fonts/
+	elif [[ -d ~/.local/share ]]; then
+		mv $DOTPATH/fonts ~/.local/share/
 	else
+		mkdir ~/.local/share
 		mv $DOTPATH/fonts ~/.local/share/
 	fi
 	sed -i 's/CONFIG="0"/CONFIG="1"/' $FLAGPATH
@@ -213,9 +216,9 @@ printf "\nIt is recommended to reboot your system and log into hyprland (uwsm-ma
 while true; do
     		read -p "Would you like to continue the installation [y/n]" rebootyn
     		case $rebootyn in
-        		[Yy]* ) exit;;
+        		[Yy]* ) break;;
         		[Nn]* ) echo "You can always continue the installation where you left off by running the script again."
-				break;;
+				exit;;
         		* ) echo "Input y/n.";;
     		esac
 done
