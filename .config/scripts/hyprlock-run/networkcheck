@@ -1,0 +1,12 @@
+#!/bin/zsh
+
+if nmcli -t -f DEVICE,STATE con show --active | grep -q '^eno1:'
+then
+    echo "<span>  </span>"
+elif nmcli -t -f DEVICE,STATE con show --active | grep -q '^wlan0:'
+then
+    echo "<span>  </span>"
+else
+    echo "<span>  </span>"
+fi
+
