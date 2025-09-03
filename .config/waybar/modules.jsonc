@@ -17,9 +17,6 @@
 	"*": [1,2,3,4,5]
 	}
     },
-    "hyprland/submap": {
-        "format": "<span style=\"italic\">{}</span>"
-    },
     "hyprland/window": {
         "format": "{title}",
 	"icon": true,
@@ -33,6 +30,7 @@
         "format": "{icon}",
         "format-icons": ["▏▏▏▏", "▋▏▏▏", "▋▋▏▏", "▋▋▋▏", "▋▋▋▋"],
 	"tooltip-format": "{capacity}% ({timeTo})"
+	"on-click": "~/.config/scripts/powersaving"
     },
     "clock": {
         "timezone": "Asia/Kolkata",
