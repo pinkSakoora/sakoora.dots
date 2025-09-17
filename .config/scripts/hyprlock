@@ -1,8 +1,0 @@
-#!/bin/zsh
-
-grim ~/.cache/hyprlock-cache/beforelock.png
-~/.config/scripts/hyprlock-run/leftpanels
-~/.config/scripts/hyprlock-run/rightpanel
-if [[ -f ~/.cache/hyprlock-cache/first_grace ]]; then
-	rm ~/.cache/hyprlock-cache/first_grace
-fi

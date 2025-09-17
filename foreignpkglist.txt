@@ -1,4 +1,0 @@
-hyprshade
-hyprshot
-python-pywal16
-rose-pine-hyprcursor
