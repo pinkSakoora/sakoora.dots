@@ -1,7 +1,4 @@
 hyprshade
 hyprshot
-hyprsysteminfo
 python-pywal16
-python-pywalfox
 rose-pine-hyprcursor
-zen-browser-bin

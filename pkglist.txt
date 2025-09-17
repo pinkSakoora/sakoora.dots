@@ -2,7 +2,6 @@ archlinux-xdg-menu
 cmake
 cpio
 curl
-dolphin
 dunst
 fastfetch
 gcc
@@ -15,15 +14,15 @@ hyprpolkitagent
 hyprsunset
 kitty
 meson
+nautilus
 neovim
 papirus-icon-theme
 pkg-config
+pulseaudio
 rofi
-sddm
 swww
 ttf-firacode-nerd
 ttf-noto-nerd
-uwsm
 vi
 vim
 waybar
