@@ -102,21 +102,7 @@ else
 fi
 sleep 3
 
-# 4. zsh configuration.
-if [[ $ZSHDEF == 0 ]]; then
-	printf "\nInstalling oh-my-zsh\n"
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-	sleep 0.5
-	cat ~/.dotfiles/.zshalias >> ~/.zshrc
-	sudo chsh -s /usr/bin/zsh $USER
-	sed -i 's/ZSHDEF="0"/ZSHDEF="1"/' $FLAGPATH
-	printf "\nzsh set up.\n"
-else
-	printf "\nzsh had already been set up.\n"
-fi
-sleep 3
-
-# 5. Configs
+# 4. Configs
 if [[ $CONFIG == 0 ]]; then
 	while true; do
     		read -p "Proceed with changing configs? [y/n]" configyn
