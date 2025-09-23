@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 DOTPATH=~/.dotfiles
 FLAGPATH=~/.dotfiles/flaglist.sh
@@ -6,6 +6,33 @@ PKGLIST=~/.dotfiles/pkglist.txt
 YAYPKGLIST=~/.dotfiles/foreignpkglist.txt
 
 source $FLAGPATH
+
+confirm() {					# usage: confirm "Prompt" optional: -N
+local response
+local defaultresponse="Y"
+local responsebox="[Y/n]"
+
+if [ "$2" = "-N" ]; then
+	responsebox="[y/N]"
+	defaultresponse="N"
+fi
+
+while true; do
+	read -rp "$1 $responsebox" response
+	response="${response:-$defaultresponse}"
+	case "$response" in
+		[Yy]* )
+			return 0
+			;;
+		[Nn]* )
+			return 1
+			;;
+		* )
+			echo "Invalid input."
+			;;
+	esac
+done
+}
 
 cd ~
 clear
@@ -24,14 +51,14 @@ printf "\nProgress:\n"
 cat $FLAGPATH
 sleep 3
 printf "\nIt is strongly recommended to run this script in a separate tty to prevent any unexpected behaviour\n"
-while true; do
-    read -p "Proceed with installation? [y/n]" installyn
-    case $installyn in
-        [Yy]* ) break;;
-        [Nn]* ) exit;; 
-        * ) echo "Input y/n.";;
-    esac
-done
+confirm "Proceed with installation?"
+case "$?" in
+	0 )
+		break;;
+	1 )
+		echo "Exiting installer..."
+		exit;;
+esac
 
 # 1. Install pacman packages
 if [[ $PACMAN == 0 ]]; then
