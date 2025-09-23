@@ -1,11 +1,13 @@
 #!/bin/sh
 
-DOTPATH=~/.dotfiles
-FLAGPATH=~/.dotfiles/flaglist.sh
-PKGLIST=~/.dotfiles/pkglist.txt
-YAYPKGLIST=~/.dotfiles/foreignpkglist.txt
+dotpath=/home/$USER/.dotfiles
+flagpath=/home/$USER/.dotfiles/flaglist.sh
+pkglist=/home/$USER/.dotfiles/pkglist.txt
+yaypkglist=/home/$USER/.dotfiles/foreignpkglist.txt
+configfolder=/home/$USER/.config
+modifiedconfigs=("/hypr" "/dunst" "/fastfetch" "/kitty" "/waybar" "/rofi" "/scripts")
 
-source $FLAGPATH
+source $flagpath
 
 confirm() {					# usage: confirm "Prompt" optional: -N
 local response
@@ -34,7 +36,7 @@ while true; do
 done
 }
 
-execute(){
+execute() {
 $1
 local exitcode="$?"
 
@@ -49,10 +51,28 @@ else
 fi
 }
 
+test_tty() {
+tty | grep -s tty && return 0 || return 1
+}
+
+command_exists() {
+command -v "$@" >/dev/null 2>&1
+}
+
+append_suffix() {
+local suffix="$2"
+local file="$configfolder$1"
+if [ -d "$file" ]; then
+	mv "$file" "$file$suffix"
+fi
+}
+
 show_progress() {
 	echo "Progress:"
-	cat $FLAGPATH
-	echo "It is strongly recommended to run this script in a separate tty to prevent any unexpected behaviour."
+	cat $flagpath
+	if [ test_tty = "1" ]; then
+		echo "It is detected that you're currently not on a tty! It is recommended to run this script in a tty to avoid any potential issues."
+	fi
 	confirm "Proceed with installation?"
 	case "$?" in
 		0 )
@@ -64,39 +84,39 @@ show_progress() {
 }
 
 pacman_install() {
-	echo "Installing all recommended packages..."
+	echo "Installing all required packages..."
 	echo 
-	execute "sudo pacman -Sy" || { echo "Failed to update pacman db. Exit code: $?"; exit 1 }
-	execute "sudo pacman -S --needed - < $PKGLIST" || { echo "Failed to install packages. Exit code: $?"; exit 2 }
-	sed -i 's/PACMAN="0"/PACMAN="1"/' $FLAGPATH
+	execute "sudo pacman -Sy" || { echo "Failed to update pacman db. Exit code: $?"; exit 1; }
+	execute "sudo pacman -S --needed - < $pkglist" || { echo "Failed to install packages. Exit code: $?"; exit 2; }
+	sed -i 's/PACMAN="0"/PACMAN="1"/' $flagpath
 	return
 }
 
 setup_yay() {
-	confirm "Has yay been installed on this device?" -N
+	echo "The next part of the installation requires yay, which has not been detected on your system."
+	confirm "Install yay now?"
 	case $? in
 		0 ) 
 			break;;
 		1 ) 
-			printf "\nSetting up yay\n"
-			execute "git clone https://aur.archlinux.org/yay.git" || { echo "Failed to clone yay repository. Exit code: $?"; exit 3 }
-			cd ~/yay
-			execute "makepkg -si" || { echo "Failed to build yay. Exit code: $?"; exit 4 }
-			cd ~
-			sed -i 's/YAYSETUP="0"/YAYSETUP="1"/' $FLAGPATH
-			printf "\nyay set up.\n"
-			break;;
+			return 1;;
 	esac
+	echo "Setting up yay..."
+	execute "git clone https://aur.archlinux.org/yay.git" || { echo "Failed to clone yay repository. Exit code: $?"; exit 3; }
+	cd ~/yay
+	execute "makepkg -si" || { echo "Failed to build yay. Exit code: $?"; exit 4; }
+	cd ~
+	echo "Yay has been installed."
 	return
 }
 
 yay_install() {
 	echo "Installing yay packages..."
-	execute "yay -Y --gendb" || { echo "Failed to generate development package database. Exit code: $?"; exit 5 }
-	execute "yay -Syu --devel" || { echo "Failed to update development packages. Exit code: $?"; exit 6 }
-	execute "yay -S - < $YAYPKGLIST" || { echo "Failed to install required AUR packages. Exit code: $?"; exit 7 }
-	sed -i 's/YAYIN="0"/YAYIN="1"/' $FLAGPATH
-	printf "\nAUR packages installed.\n"
+	execute "yay -Y --gendb" || { echo "Failed to generate development package database. Exit code: $?"; exit 5; }
+	execute "yay -Syu --devel" || { echo "Failed to update development packages. Exit code: $?"; exit 6; }
+	execute "yay -S - < $yaypkglist" || { echo "Failed to install required AUR packages. Exit code: $?"; exit 7; }
+	sed -i 's/YAYIN="0"/YAYIN="1"/' $flagpath
+	echo "AUR packages installed."
 	return
 }
 
@@ -106,82 +126,75 @@ config_change() {
 		0 )
 			break;;
 		1 )
-			return;;
+			return 1;;
 	esac
-	SUFFIX="-pre-sakoora"
-	printf "\nRenaming preexisting config files\n"
-	if [[ -d ~/.config/hypr ]]; then
-		mv ~/.config/hypr ~/.config/hypr$SUFFIX
-	fi
-	if [[ -d ~/.config/dunst ]]; then
-		mv ~/.config/dunst ~/.config/dunst$SUFFIX
-	fi
-	if [[ -d ~/.config/fastfetch ]]; then
-		mv ~/.config/fastfetch ~/.config/fastfetch$SUFFIX
-	fi
-	if [[ -d ~/.config/kitty ]]; then
-		mv ~/.config/kitty ~/.config/kitty$SUFFIX
-	fi
-	if [[ -d ~/.config/waybar ]]; then
-		mv ~/.config/waybar ~/.config/waybar$SUFFIX
-	fi
-	if [[ -d ~/.config/rofi ]]; then
-		mv ~/.config/rofi ~/.config/rofi$SUFFIX
-	fi
-	if [[ -d ~/.config/scripts ]]; then
-		mv ~/.config/scripts ~/config/scripts$SUFFIX
-	fi
-	printf "\nOld config files have been renamed to [config_folder]-pre-sakoora.\n"
-	sleep 0.5
-	printf "\nMoving config files from .dotfiles to required location"
-	mv $DOTPATH/.config/hypr ~/.config/
-	mv $DOTPATH/.config/dunst ~/.config/
-	mv $DOTPATH/.config/fastfetch ~/.config/
-	mv $DOTPATH/.config/kitty ~/.config/
-	mv $DOTPATH/.config/waybar ~/.config/
-	mv $DOTPATH/.config/rofi ~/.config/
-	mv $DOTPATH/.config/scripts ~/.config/
-	sleep 0.5
-	printf "\nMoving wallpapers"
-	if [[ -d ~/Pictures ]]; then
-		printf "\nPictures directory already exists...\n"
+
+	echo "Renaming preexisting config files..."
+	local file
+	for file in "${modifiedconfigs[@]}"; do
+		append_suffix "$file" "-pre-sakoora"
+	done
+	echo "Old config files have been renamed to [config_folder]-pre-sakoora."
+
+	echo "Moving config files from .dotfiles to required location..."
+	mv $dotpath/.config/* $configfolder/
+	echo "Done!"
+
+	echo "Moving required font files to ~/.local/share/fonts/"
+	if [ -d "/home/$USER/.local/share/fonts" ]; then
+		echo "Fonts directory already exists..."
+		mv $dotpath/fonts/* /home/$USER/.local/share/fonts/
+	elif [ -d "/home/$USER/.local/share" ]; then
+		mv $dotpath/fonts /home/$USER/.local/share/
 	else
-		mkdir ~/Pictures
+		mkdir /home/$USER/.local/share
+		mv $dotpath/fonts /home/$USER/.local/share/
+	fi
+	echo "Moved!"
+
+	sed -i 's/CONFIG="0"/CONFIG="1"/' $flagpath
+	return
+}
+
+wallpapers() {
+	confirm "Do you want wallpapers?"
+	case "$?" in
+		0 )
+			break;;
+		1 )
+			return 1;;
+	esac
+	git clone --single-branch --branch media https://github.com/pinkSakoora/.dotfiles.git $dotpath/walls
+	if [[ -d ~/Pictures ]]; then
+		echo "Pictures directory already exists..."
+	else
+		mkdir /home/$USER/Pictures
 	fi
 	if [[ -d ~/Pictures/Wallpapers ]]; then
-		printf "\nWallpapers directory already exists...\n"
-		mv $DOTPATH/Wallpapers/* ~/Pictures/Wallpapers/
+		echo "Wallpapers directory already exists..."
+		mv $dotpath/walls/Wallpapers/* /home/$USER/Pictures/Wallpapers/
 	else
 		mkdir ~/Pictures/Wallpapers
-		mv $DOTPATH/Wallpapers ~/Pictures
+		mv $dotpath/walls/Wallpapers /home/$USER/Pictures
 	fi
-	printf "\nSet a wallpaper using wallset command in terminal. wallset runs\n pywal which is needed for waybar to load."
-	sleep 0.5
-	printf "\nMoving required font files to ~/.local/share/fonts/\n"
-	if [[ -d ~/.local/share/fonts ]]; then
-		printf "\nFonts directory already exists...\n"
-		mv $DOTPATH/fonts/* ~/.local/share/fonts/
-	elif [[ -d ~/.local/share ]]; then
-		mv $DOTPATH/fonts ~/.local/share/
-	else
-		mkdir ~/.local/share
-		mv $DOTPATH/fonts ~/.local/share/
-	fi
-	sed -i 's/CONFIG="0"/CONFIG="1"/' $FLAGPATH
-	return
+	echo "Wallpapers moved!"
+	echo "Set a wallpaper using wallset command in terminal. wallset runs pywal which is needed for waybar to load."
 }
 
 main() {
 show_progress
 [ "$PACMAN" = "0" ] && \
 	pacman_install
-[ "$YAYSETUP" = "0" ] && \
+if ! command_exists yay; then
 	setup_yay
+fi
 [ "$YAYIN" = "0" ] && \
 	yay_install
 [ "$CONFIG" = "0" ] && \
 	config_change
+wallpapers
 echo "Installation complete!"
+echo "Reboot your system and log into hyprland to enjoy your new config."
 exit
 }
 
