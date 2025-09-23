@@ -34,41 +34,28 @@ while true; do
 done
 }
 
-cd ~
-clear
-cat <<"EOF"
-            _                              _       _       
-           | |                            | |     | |      
-  ___  __ _| | _____   ___  _ __ __ _   __| | ___ | |_ ___ 
- / __|/ _` | |/ / _ \ / _ \| '__/ _` | / _` |/ _ \| __/ __|
- \__ \ (_| |   < (_) | (_) | | | (_| || (_| | (_) | |_\__ \
- |___/\__,_|_|\_\___/ \___/|_|  \__,_(_)__,_|\___/ \__|___/
-                                                           
-                                                           
-EOF
-# 0.5. Display current status according to flags
-printf "\nProgress:\n"
-cat $FLAGPATH
-sleep 3
-printf "\nIt is strongly recommended to run this script in a separate tty to prevent any unexpected behaviour\n"
-confirm "Proceed with installation?"
-case "$?" in
-	0 )
-		break;;
-	1 )
-		echo "Exiting installer..."
-		exit;;
-esac
+show_progress() {
+	printf "\nProgress:\n"
+	cat $FLAGPATH
+	sleep 3
+	printf "\nIt is strongly recommended to run this script in a separate tty to prevent any unexpected behaviour\n"
+	confirm "Proceed with installation?"
+	case "$?" in
+		0 )
+			break;;
+		1 )
+			echo "Exiting installer..."
+			exit;;
+	esac
+}
 
-# 1. Install pacman packages
-if [[ $PACMAN == 0 ]]; then
+pacman_install() {
 	printf "\nInstalling all recommended packages\n"
 	sudo pacman -Sy
 	if [[ $? -gt 0 ]]; then
 		printf "\nPacman sync failed, exiting installer."
 		exit
 	fi
-	sleep 0.5
 	sudo pacman -S --needed - < $PKGLIST
 	if [[ $? -eq 0 ]]; then
 		sed -i 's/PACMAN="0"/PACMAN="1"/' $FLAGPATH
@@ -77,46 +64,42 @@ if [[ $PACMAN == 0 ]]; then
 		printf "\nPackages were not installed.\n"
 		exit
 	fi
-else
-	printf "\nRequired packages have already been installed.\n"
-fi
-sleep 3
+	return
+}
 
-# 2. Setup yay
-if [[ $YAYSETUP == 0 ]]; then
-	while true; do
-    		read -p "Has yay been installed on this device? [y/n]" installyn
-    		case $installyn in
-        		[Yy]* ) break;;
-        		[Nn]* ) printf "\nSetting up yay\n"
-				git clone https://aur.archlinux.org/yay.git
-				if [[ $? -gt 0 ]]; then
-					printf "\nCloning into yay repository failed, exiting installer."
-					exit
-				fi
-				cd ~/yay
-				sleep 0.5
-				makepkg -si
-				sleep 0.5
-				cd ~
-				sed -i 's/YAYSETUP="0"/YAYSETUP="1"/' $FLAGPATH
-				printf "\nyay set up.\n"
-				break;;
-        		* ) echo "Input y/n.";;
-   		esac
-	done
-else
-	printf "\nyay has been previously set up.\n"
-fi
-sleep 3
+setup_yay() {
+	confirm "Has yay been installed on this device?" -N
+	case $? in
+		0 ) 
+			break;;
+		1 ) 
+			printf "\nSetting up yay\n"
+			git clone https://aur.archlinux.org/yay.git
+			if [[ $? -gt 0 ]]; then
+				printf "\nCloning into yay repository failed, exiting installer."
+				exit
+			fi
+			cd ~/yay
+			makepkg -si
+			cd ~
+			sed -i 's/YAYSETUP="0"/YAYSETUP="1"/' $FLAGPATH
+			printf "\nyay set up.\n"
+			break;;
+	esac
+	return
+}
 
-# 3. Install yay packages
-if [[ $YAYIN == 0 ]]; then
+yay_install() {
+	confirm "Yay installation."
+	case $? in
+		0)
+			break;;
+		1)
+			return;;
+	esac
 	printf "\nInstalling AUR packages via yay\n"
 	yay -Y --gendb
-	sleep 0.5
 	yay -Syu --devel
-	sleep 0.5
 	yay -S - < $YAYPKGLIST
 	if [[ $? -gt 0 ]]; then
 		printf "\nInstallation of AUR packages failed.\n"
@@ -124,21 +107,17 @@ if [[ $YAYIN == 0 ]]; then
 	fi
 	sed -i 's/YAYIN="0"/YAYIN="1"/' $FLAGPATH
 	printf "\nAUR packages installed.\n"
-else
-	printf "\nAUR packages have already been installed.\n"
-fi
-sleep 3
+	return
+}
 
-# 4. Configs
-if [[ $CONFIG == 0 ]]; then
-	while true; do
-    		read -p "Proceed with changing configs? [y/n]" configyn
-    		case $configyn in
-        		[Yy]* ) break;;
-        		[Nn]* ) exit;; 
-        		* ) echo "Input y/n.";;
-    		esac
-	done
+config_change() {
+	confirm "Proceed with changing configs?"
+	case $? in
+		0 )
+			break;;
+		1 )
+			return;;
+	esac
 	SUFFIX="-pre-sakoora"
 	printf "\nRenaming preexisting config files\n"
 	if [[ -d ~/.config/hypr ]]; then
@@ -199,7 +178,34 @@ if [[ $CONFIG == 0 ]]; then
 		mv $DOTPATH/fonts ~/.local/share/
 	fi
 	sed -i 's/CONFIG="0"/CONFIG="1"/' $FLAGPATH
-else
-	printf "\nConfiguration is already completed.\n"
-fi
-sleep 3
+	return
+}
+
+main() {
+show_progress
+[ "$PACMAN" = "0" ] && \
+	pacman_install
+[ "$YAYSETUP" = "0" ] && \
+	setup_yay
+[ "$YAYIN" = "0" ] && \
+	yay_install
+[ "$CONFIG" = "0" ] && \
+	config_change
+echo "Installation complete!"
+exit
+}
+
+cd ~
+clear
+cat <<"EOF"
+            _                              _       _       
+           | |                            | |     | |      
+  ___  __ _| | _____   ___  _ __ __ _   __| | ___ | |_ ___ 
+ / __|/ _` | |/ / _ \ / _ \| '__/ _` | / _` |/ _ \| __/ __|
+ \__ \ (_| |   < (_) | (_) | | | (_| || (_| | (_) | |_\__ \
+ |___/\__,_|_|\_\___/ \___/|_|  \__,_(_)__,_|\___/ \__|___/
+                                                           
+                                                           
+EOF
+
+main
