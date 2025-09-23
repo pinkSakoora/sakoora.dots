@@ -34,15 +34,29 @@ while true; do
 done
 }
 
+execute(){
+$1
+local exitcode="$?"
+
+if [ "$2" = "-debug" ]; then
+	exitcode="0"
+fi
+
+if [ "$exitcode" = "0" ]; then
+	return 0
+else
+	return $exitcode
+fi
+}
+
 show_progress() {
-	printf "\nProgress:\n"
+	echo "Progress:"
 	cat $FLAGPATH
-	sleep 3
-	printf "\nIt is strongly recommended to run this script in a separate tty to prevent any unexpected behaviour\n"
+	echo "It is strongly recommended to run this script in a separate tty to prevent any unexpected behaviour."
 	confirm "Proceed with installation?"
 	case "$?" in
 		0 )
-			break;;
+			return 0;;
 		1 )
 			echo "Exiting installer..."
 			exit;;
@@ -50,20 +64,11 @@ show_progress() {
 }
 
 pacman_install() {
-	printf "\nInstalling all recommended packages\n"
-	sudo pacman -Sy
-	if [[ $? -gt 0 ]]; then
-		printf "\nPacman sync failed, exiting installer."
-		exit
-	fi
-	sudo pacman -S --needed - < $PKGLIST
-	if [[ $? -eq 0 ]]; then
-		sed -i 's/PACMAN="0"/PACMAN="1"/' $FLAGPATH
-		printf "\nPackages installed.\n"
-	else
-		printf "\nPackages were not installed.\n"
-		exit
-	fi
+	echo "Installing all recommended packages..."
+	echo 
+	execute "sudo pacman -Sy" || { echo "Failed to update pacman db. Exit code: $?"; exit 1 }
+	execute "sudo pacman -S --needed - < $PKGLIST" || { echo "Failed to install packages. Exit code: $?"; exit 2 }
+	sed -i 's/PACMAN="0"/PACMAN="1"/' $FLAGPATH
 	return
 }
 
@@ -74,13 +79,9 @@ setup_yay() {
 			break;;
 		1 ) 
 			printf "\nSetting up yay\n"
-			git clone https://aur.archlinux.org/yay.git
-			if [[ $? -gt 0 ]]; then
-				printf "\nCloning into yay repository failed, exiting installer."
-				exit
-			fi
+			execute "git clone https://aur.archlinux.org/yay.git" || { echo "Failed to clone yay repository. Exit code: $?"; exit 3 }
 			cd ~/yay
-			makepkg -si
+			execute "makepkg -si" || { echo "Failed to build yay. Exit code: $?"; exit 4 }
 			cd ~
 			sed -i 's/YAYSETUP="0"/YAYSETUP="1"/' $FLAGPATH
 			printf "\nyay set up.\n"
@@ -90,21 +91,10 @@ setup_yay() {
 }
 
 yay_install() {
-	confirm "Yay installation."
-	case $? in
-		0)
-			break;;
-		1)
-			return;;
-	esac
-	printf "\nInstalling AUR packages via yay\n"
-	yay -Y --gendb
-	yay -Syu --devel
-	yay -S - < $YAYPKGLIST
-	if [[ $? -gt 0 ]]; then
-		printf "\nInstallation of AUR packages failed.\n"
-		exit
-	fi
+	echo "Installing yay packages..."
+	execute "yay -Y --gendb" || { echo "Failed to generate development package database. Exit code: $?"; exit 5 }
+	execute "yay -Syu --devel" || { echo "Failed to update development packages. Exit code: $?"; exit 6 }
+	execute "yay -S - < $YAYPKGLIST" || { echo "Failed to install required AUR packages. Exit code: $?"; exit 7 }
 	sed -i 's/YAYIN="0"/YAYIN="1"/' $FLAGPATH
 	printf "\nAUR packages installed.\n"
 	return
