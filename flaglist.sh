@@ -1,4 +1,3 @@
-PACMAN="0"
-YAYSETUP="0"
-YAYIN="0"
-CONFIG="0"
+s_pacman="0"
+s_yay="0"
+s_config="0"

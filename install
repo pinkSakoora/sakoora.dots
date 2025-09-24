@@ -1,13 +1,27 @@
 #!/bin/sh
 
-dotpath=/home/$USER/.dotfiles
-flagpath=/home/$USER/.dotfiles/flaglist.sh
-pkglist=/home/$USER/.dotfiles/pkglist.txt
-yaypkglist=/home/$USER/.dotfiles/foreignpkglist.txt
-configfolder=/home/$USER/.config
+dotpath="/home/$USER/.dotfiles"
+flagpath="/home/$USER/.dotfiles/flaglist.sh"
+pkglist="/home/$USER/.dotfiles/pkglist.txt"
+yaypkglist="/home/$USER/.dotfiles/foreignpkglist.txt"
+configfolder="/home/$USER/.config"
+
 modifiedconfigs=("/hypr" "/dunst" "/fastfetch" "/kitty" "/waybar" "/rofi" "/scripts")
 
 source $flagpath
+
+bigtext() {
+cat <<"EOF"
+            _                              _       _       
+           | |                            | |     | |      
+  ___  __ _| | _____   ___  _ __ __ _   __| | ___ | |_ ___ 
+ / __|/ _` | |/ / _ \ / _ \| '__/ _` | / _` |/ _ \| __/ __|
+ \__ \ (_| |   < (_) | (_) | | | (_| || (_| | (_) | |_\__ \
+ |___/\__,_|_|\_\___/ \___/|_|  \__,_(_)__,_|\___/ \__|___/
+                                                           
+                                                           
+EOF
+}
 
 confirm() {					# usage: confirm "Prompt" optional: -N
 local response
@@ -37,12 +51,8 @@ done
 }
 
 execute() {
-$1
+$@
 local exitcode="$?"
-
-if [ "$2" = "-debug" ]; then
-	exitcode="0"
-fi
 
 if [ "$exitcode" = "0" ]; then
 	return 0
@@ -52,7 +62,8 @@ fi
 }
 
 test_tty() {
-tty | grep -s tty && return 0 || return 1
+tty | grep -s tty && s_intty="0" || s_intty="1"
+[ s_intty = "0" ] && return 0 || return 1
 }
 
 command_exists() {
@@ -68,12 +79,34 @@ fi
 }
 
 show_progress() {
+	echo
 	echo "Progress:"
-	cat $flagpath
-	if [ test_tty = "1" ]; then
-		echo "It is detected that you're currently not on a tty! It is recommended to run this script in a tty to avoid any potential issues."
+	echo
+	if [ "$s_pacman" = "0" ]; then
+		echo "[ ✖ ] Required pacman packages have not been installed yet."
+	else
+		echo "[ ✔ ] Required pacman packages installed."
 	fi
-	confirm "Proceed with installation?"
+
+	if [ "$s_yay" = "0" ]; then
+		echo "[ ✖ ] Required AUR packages have not been installed yet."
+	else
+		echo "[ ✔ ] Required AUR packages installed."
+	fi
+
+	if [ "$s_config" = "0" ]; then
+		echo "[ ✖ ] Config files have not been replaced yet."
+	else
+		echo "[ ✔ ] Config files replaced."
+	fi
+	
+	test_tty
+	if [ "$?" = "1" ]; then
+		echo
+		echo -e "[ \033[1m!\033[0m ] It is detected that you're currently not on a tty! It is recommended to run this script in a tty to avoid any potential issues."
+		echo
+	fi
+	[ s_intty = "0" ] && confirm "Proceed with installation?" || confirm "Proceed with installation? (Not recommended)" -N
 	case "$?" in
 		0 )
 			return 0;;
@@ -86,9 +119,9 @@ show_progress() {
 pacman_install() {
 	echo "Installing all required packages..."
 	echo 
-	execute "sudo pacman -Sy" || { echo "Failed to update pacman db. Exit code: $?"; exit 1; }
-	execute "sudo pacman -S --needed - < $pkglist" || { echo "Failed to install packages. Exit code: $?"; exit 2; }
-	sed -i 's/PACMAN="0"/PACMAN="1"/' $flagpath
+	execute sudo pacman -Syu || { echo "Failed to update pacman db. Exit code: $?"; exit 1; }
+	execute sudo pacman -S --needed - < $pkglist || { echo "Failed to install packages. Exit code: $?"; exit 2; }
+	sed -i 's/s_pacman="0"/s_pacman="1"/' $flagpath
 	return
 }
 
@@ -102,9 +135,9 @@ setup_yay() {
 			return 1;;
 	esac
 	echo "Setting up yay..."
-	execute "git clone https://aur.archlinux.org/yay.git" || { echo "Failed to clone yay repository. Exit code: $?"; exit 3; }
+	execute git clone https://aur.archlinux.org/yay.git || { echo "Failed to clone yay repository. Exit code: $?"; exit 3; }
 	cd ~/yay
-	execute "makepkg -si" || { echo "Failed to build yay. Exit code: $?"; exit 4; }
+	execute makepkg -si || { echo "Failed to build yay. Exit code: $?"; exit 4; }
 	cd ~
 	echo "Yay has been installed."
 	return
@@ -112,10 +145,10 @@ setup_yay() {
 
 yay_install() {
 	echo "Installing yay packages..."
-	execute "yay -Y --gendb" || { echo "Failed to generate development package database. Exit code: $?"; exit 5; }
-	execute "yay -Syu --devel" || { echo "Failed to update development packages. Exit code: $?"; exit 6; }
-	execute "yay -S - < $yaypkglist" || { echo "Failed to install required AUR packages. Exit code: $?"; exit 7; }
-	sed -i 's/YAYIN="0"/YAYIN="1"/' $flagpath
+	execute yay -Y --gendb || { echo "Failed to generate development package database. Exit code: $?"; exit 5; }
+	execute yay -Syu --devel || { echo "Failed to update development packages. Exit code: $?"; exit 6; }
+	execute yay -S - < $yaypkglist || { echo "Failed to install required AUR packages. Exit code: $?"; exit 7; }
+	sed -i 's/s_yay="0"/s_yay="1"/' $flagpath
 	echo "AUR packages installed."
 	return
 }
@@ -124,6 +157,9 @@ config_change() {
 	confirm "Proceed with changing configs?"
 	case $? in
 		0 )
+			echo 
+			echo "You can pick up from where you left anytime by running this script again."
+			echo "Exiting installer..."
 			break;;
 		1 )
 			return 1;;
@@ -152,7 +188,7 @@ config_change() {
 	fi
 	echo "Moved!"
 
-	sed -i 's/CONFIG="0"/CONFIG="1"/' $flagpath
+	sed -i 's/s_config="0"/s_config="1"/' $flagpath
 	return
 }
 
@@ -182,17 +218,19 @@ wallpapers() {
 }
 
 main() {
+bigtext
 show_progress
-[ "$PACMAN" = "0" ] && \
+[ "$s_pacman" = "0" ] && \
 	pacman_install
 if ! command_exists yay; then
 	setup_yay
 fi
-[ "$YAYIN" = "0" ] && \
+[ "$s_yay" = "0" ] && \
 	yay_install
-[ "$CONFIG" = "0" ] && \
+[ "$s_config" = "0" ] && \
 	config_change
 wallpapers
+bigtext
 echo "Installation complete!"
 echo "Reboot your system and log into hyprland to enjoy your new config."
 exit
@@ -200,15 +238,4 @@ exit
 
 cd ~
 clear
-cat <<"EOF"
-            _                              _       _       
-           | |                            | |     | |      
-  ___  __ _| | _____   ___  _ __ __ _   __| | ___ | |_ ___ 
- / __|/ _` | |/ / _ \ / _ \| '__/ _` | / _` |/ _ \| __/ __|
- \__ \ (_| |   < (_) | (_) | | | (_| || (_| | (_) | |_\__ \
- |___/\__,_|_|\_\___/ \___/|_|  \__,_(_)__,_|\___/ \__|___/
-                                                           
-                                                           
-EOF
-
 main

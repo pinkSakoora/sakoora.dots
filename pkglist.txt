@@ -18,7 +18,7 @@ nautilus
 neovim
 papirus-icon-theme
 pkg-config
-pulseaudio
+pipewire-pulse
 rofi
 swww
 ttf-firacode-nerd
