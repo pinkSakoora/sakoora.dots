@@ -51,14 +51,37 @@ done
 }
 
 execute() {
-$@
-local exitcode="$?"
+$@ | tee $logfile
+exitcode=${PIPESTATUS[0]}
+return $exitcode
+}
 
-if [ "$exitcode" = "0" ]; then
-	return 0
-else
-	return $exitcode
-fi
+command_fail() {
+case "$1" in
+	1 )
+		echo "Failed to update pacman db. Pacman exit code: $exitcode"
+		break;;
+	2 )
+		echo "Failed to install pacman packages. Pacman exit code: $exitcode"
+		break;;
+	3 )
+		echo "Failed to clone yay repository. Git exit code: $exitcode"
+		break;;
+	4 )
+		echo "Failed to build yay. Makepkg exit code: $exitcode"
+		break;;
+	5 )
+		echo "Failed to generate development package database. Yay exit code: $exitcode"
+		break;;
+	6 )
+		echo "Failed to update development packages. Yay exit code: $exitcode"
+		break;;
+	7 )
+		echo "Failed to install required AUR packages. Yay exit code: $exitcode"
+		break;;
+esac
+echo "Failed command logged in file located at \"$logfile\""
+echo "Installation failed with status: $1"
 }
 
 test_tty() {
@@ -119,8 +142,8 @@ show_progress() {
 pacman_install() {
 	echo "Installing all required packages..."
 	echo 
-	execute sudo pacman -Syu || { echo "Failed to update pacman db. Exit code: $?"; exit 1; }
-	execute sudo pacman -S --needed - < $pkglist || { echo "Failed to install packages. Exit code: $?"; exit 2; }
+	execute sudo pacman -Syu || command_fail 1
+	execute sudo pacman -S --needed - < $pkglist || command_fail 2
 	sed -i 's/s_pacman="0"/s_pacman="1"/' $flagpath
 	return
 }
@@ -135,9 +158,9 @@ setup_yay() {
 			return 1;;
 	esac
 	echo "Setting up yay..."
-	execute git clone https://aur.archlinux.org/yay.git || { echo "Failed to clone yay repository. Exit code: $?"; exit 3; }
+	execute git clone https://aur.archlinux.org/yay.git || command_fail 3
 	cd ~/yay
-	execute makepkg -si || { echo "Failed to build yay. Exit code: $?"; exit 4; }
+	execute makepkg -si || command_fail 4
 	cd ~
 	echo "Yay has been installed."
 	return
@@ -145,9 +168,9 @@ setup_yay() {
 
 yay_install() {
 	echo "Installing yay packages..."
-	execute yay -Y --gendb || { echo "Failed to generate development package database. Exit code: $?"; exit 5; }
-	execute yay -Syu --devel || { echo "Failed to update development packages. Exit code: $?"; exit 6; }
-	execute yay -S - < $yaypkglist || { echo "Failed to install required AUR packages. Exit code: $?"; exit 7; }
+	execute yay -Y --gendb || command_fail 5
+	execute yay -Syu --devel || command_fail 6
+	execute yay -S - < $yaypkglist || command_fail 7
 	sed -i 's/s_yay="0"/s_yay="1"/' $flagpath
 	echo "AUR packages installed."
 	return
@@ -187,7 +210,6 @@ config_change() {
 		mv $dotpath/fonts /home/$USER/.local/share/
 	fi
 	echo "Moved!"
-
 	sed -i 's/s_config="0"/s_config="1"/' $flagpath
 	return
 }
@@ -218,6 +240,8 @@ wallpapers() {
 }
 
 main() {
+logfile="/home/$USER/.dotfiles/s_info$$.log"
+touch logfile
 bigtext
 show_progress
 [ "$s_pacman" = "0" ] && \
