@@ -79,14 +79,24 @@ case "$1" in
 	7 )
 		echo "Failed to install required AUR packages. Yay exit code: $exitcode"
 		break;;
+	8 )
+		echo "Exiting installer on user prompt [Pre-installation exit: 8]"
+		exit 8;;
+	9 )
+		echo "Exiting installer on user prompt [Yay setup aborted: 9]"
+		exit 9;;
+	10 )
+		echo "Exiting installer on user prompt [Configuration swap aborted: 10]"
+		exit 10;;
 esac
 echo "Failed command logged in file located at \"$logfile\""
 echo "Installation failed with status: $1"
+exit $exitcode
 }
 
 test_tty() {
 tty | grep -s tty && s_intty="0" || s_intty="1"
-[ s_intty = "0" ] && return 0 || return 1
+return
 }
 
 command_exists() {
@@ -102,7 +112,6 @@ fi
 }
 
 show_progress() {
-	echo
 	echo "Progress:"
 	echo
 	if [ "$s_pacman" = "0" ]; then
@@ -124,18 +133,17 @@ show_progress() {
 	fi
 	
 	test_tty
-	if [ "$?" = "1" ]; then
+	if [ "$s_intty" = "1" ]; then
 		echo
 		echo -e "[ \033[1m!\033[0m ] It is detected that you're currently not on a tty! It is recommended to run this script in a tty to avoid any potential issues."
 		echo
 	fi
-	[ s_intty = "0" ] && confirm "Proceed with installation?" || confirm "Proceed with installation? (Not recommended)" -N
+	[ "$s_intty" = "0" ] && confirm "Proceed with installation?" || confirm "Proceed with installation? (Not recommended)" -N
 	case "$?" in
 		0 )
 			return 0;;
 		1 )
-			echo "Exiting installer..."
-			exit;;
+			command_fail 8
 	esac
 }
 
@@ -155,7 +163,7 @@ setup_yay() {
 		0 ) 
 			break;;
 		1 ) 
-			return 1;;
+			command_fail 9
 	esac
 	echo "Setting up yay..."
 	execute git clone https://aur.archlinux.org/yay.git || command_fail 3
@@ -180,12 +188,9 @@ config_change() {
 	confirm "Proceed with changing configs?"
 	case $? in
 		0 )
-			echo 
-			echo "You can pick up from where you left anytime by running this script again."
-			echo "Exiting installer..."
 			break;;
 		1 )
-			return 1;;
+			command_fail 10
 	esac
 
 	echo "Renaming preexisting config files..."
