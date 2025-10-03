@@ -10,6 +10,14 @@ modifiedconfigs=("/hypr" "/dunst" "/fastfetch" "/kitty" "/waybar" "/rofi" "/scri
 
 source $flagpath
 
+s_noyay="0"
+
+case "$1" in
+	"-noyay" ) 
+		s_noyay="1"
+		break;;
+esac
+
 bigtext() {
 cat <<"EOF"
             _                              _       _       
@@ -119,11 +127,12 @@ show_progress() {
 	else
 		echo "[ ✔ ] Required pacman packages installed."
 	fi
-
-	if [ "$s_yay" = "0" ]; then
-		echo "[ ✖ ] Required AUR packages have not been installed yet."
-	else
-		echo "[ ✔ ] Required AUR packages installed."
+	if [ "$s_noyay" = "0" ]; then
+		if [ "$s_yay" = "0" ]; then
+			echo "[ ✖ ] Required AUR packages have not been installed yet."
+		else
+			echo "[ ✔ ] Required AUR packages installed."
+		fi
 	fi
 
 	if [ "$s_config" = "0" ]; then
@@ -135,12 +144,13 @@ show_progress() {
 	if [ "$s_walls" = "0" ]; then
 		echo -e "[ \033[1mi\033[0m ] Wallpapers available."
 	fi
-	
+	echo
 	test_tty
 	if [ "$s_intty" = "1" ]; then
-		echo
 		echo -e "[ \033[1m!\033[0m ] It is detected that you're currently not on a tty! It is recommended to run this script in a tty to avoid any potential issues."
-		echo
+	fi
+	if [ "$s_noyay" = "1" ]; then
+		echo -e "[ \033[1m!\033[0m ] -noyay flag was used. Install required AUR packages in your preferred way."
 	fi
 	[ "$s_intty" = "0" ] && confirm "Proceed with installation?" || confirm "Proceed with installation? (Not recommended)" -N
 	case "$?" in
