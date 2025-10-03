@@ -34,7 +34,7 @@ if [ "$2" = "-N" ]; then
 fi
 
 while true; do
-	read -rp "$1 $responsebox" response
+	read -rp "$1 $responsebox " response
 	response="${response:-$defaultresponse}"
 	case "$response" in
 		[Yy]* )
@@ -132,6 +132,10 @@ show_progress() {
 		echo "[ ✔ ] Config files replaced."
 	fi
 	
+	if [ "$s_walls" = "0" ]; then
+		echo -e "[ \033[1mi\033[0m ] Wallpapers available."
+	fi
+	
 	test_tty
 	if [ "$s_intty" = "1" ]; then
 		echo
@@ -223,25 +227,17 @@ wallpapers() {
 	confirm "Do you want wallpapers?"
 	case "$?" in
 		0 )
+			echo "wallset command requires any wallpapers to be located in /home/$USER/Pictures/Wallpapers/ for it to work."
 			break;;
 		1 )
-			return 1;;
+			return;;
 	esac
 	git clone --single-branch --branch media https://github.com/pinkSakoora/.dotfiles.git $dotpath/walls
-	if [[ -d ~/Pictures ]]; then
-		echo "Pictures directory already exists..."
-	else
-		mkdir /home/$USER/Pictures
-	fi
-	if [[ -d ~/Pictures/Wallpapers ]]; then
-		echo "Wallpapers directory already exists..."
-		mv $dotpath/walls/Wallpapers/* /home/$USER/Pictures/Wallpapers/
-	else
-		mkdir ~/Pictures/Wallpapers
-		mv $dotpath/walls/Wallpapers /home/$USER/Pictures
-	fi
+	mkdir -p /home/$USER/Pictures/Wallpapers
+	mv $dotpath/walls/Wallpapers/* /home/$USER/Pictures/Wallpapers/
 	echo "Wallpapers moved!"
 	echo "Set a wallpaper using wallset command in terminal. wallset runs pywal which is needed for waybar to load."
+	sed -i 's/s_walls="0"/s_walls="1"/' $flagpath
 }
 
 main() {
@@ -258,7 +254,8 @@ fi
 	yay_install
 [ "$s_config" = "0" ] && \
 	config_change
-wallpapers
+[ "$s_walls" = "0" ] && \
+	wallpapers
 bigtext
 echo "Installation complete!"
 echo "Reboot your system and log into hyprland to enjoy your new config."
