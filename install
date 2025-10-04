@@ -29,7 +29,7 @@ cat <<"EOF"
            | |                            | |     | |      
   ___  __ _| | _____   ___  _ __ __ _   __| | ___ | |_ ___ 
  / __|/ _` | |/ / _ \ / _ \| '__/ _` | / _` |/ _ \| __/ __|
- \__ \ (_| |   < (_) | (_) | | | (_| || (_| | (_) | |_\__ \
+ \__ \ (_| |   < (_) | (_) | | | (_| || (_| | (_) | |_\__ \[ \033[1mi\033[0m ] 
  |___/\__,_|_|\_\___/ \___/|_|  \__,_(_)__,_|\___/ \__|___/
                                                            
                                                            
@@ -64,7 +64,7 @@ done
 }
 
 execute() {
-$@ | tee $logfile
+$@ |& tee $logfile
 exitcode=${PIPESTATUS[0]}
 return $exitcode
 }
@@ -108,7 +108,7 @@ exit $exitcode
 }
 
 test_tty() {
-tty | grep -s tty && s_intty="0" || s_intty="1"
+tty | grep -sq tty && s_intty="0" || s_intty="1"
 return
 }
 
@@ -174,8 +174,8 @@ show_progress() {
 pacman_install() {
 	echo "Installing all required packages..."
 	echo 
-	execute sudo pacman -Syu || command_fail 1
-	execute sudo pacman -S --needed - < $pkglist || command_fail 2
+	execute sudo pacman -Syu --noconfirm || command_fail 1
+	execute sudo pacman -S --needed --noconfirm - < $pkglist || command_fail 2
 	sed -i 's/s_pacman="0"/s_pacman="1"/' $flagpath
 	return
 }
@@ -201,9 +201,9 @@ setup_yay() {
 
 yay_install() {
 	echo "Installing yay packages..."
-	execute yay -Y --gendb || command_fail 5
-	execute yay -Syu --devel || command_fail 6
-	execute yay -S - < $yaypkglist || command_fail 7
+	execute yay -Y --gendb --noconfirm || command_fail 5
+	execute yay -Syu --devel --noconfirm || command_fail 6
+	execute yay -S --noconfirm - < $yaypkglist || command_fail 7
 	sed -i 's/s_yay="0"/s_yay="1"/' $flagpath
 	echo "AUR packages installed."
 	return
