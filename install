@@ -47,7 +47,7 @@ if [ "$2" = "-N" ]; then
 fi
 
 while true; do
-	read -rp "$questionsign $1 $responsebox " response
+	echo -en "$questionsign $1 $responsebox "; read -r response
 	response="${response:-$defaultresponse}"
 	case "$response" in
 		[Yy]* )
@@ -72,34 +72,34 @@ return $exitcode
 command_fail() {
 case "$1" in
 	1 )
-		echo "$alertsign Failed to update pacman db. Pacman exit code: $exitcode"
+		echo -e "$alertsign Failed to update pacman db. Pacman exit code: $exitcode"
 		break;;
 	2 )
-		echo "$alertsign Failed to install pacman packages. Pacman exit code: $exitcode"
+		echo -e "$alertsign Failed to install pacman packages. Pacman exit code: $exitcode"
 		break;;
 	3 )
-		echo "$alertsign Failed to clone yay repository. Git exit code: $exitcode"
+		echo -e "$alertsign Failed to clone yay repository. Git exit code: $exitcode"
 		break;;
 	4 )
-		echo "$alertsign Failed to build yay. Makepkg exit code: $exitcode"
+		echo -e "$alertsign Failed to build yay. Makepkg exit code: $exitcode"
 		break;;
 	5 )
-		echo "$alertsign Failed to generate development package database. Yay exit code: $exitcode"
+		echo -e "$alertsign Failed to generate development package database. Yay exit code: $exitcode"
 		break;;
 	6 )
-		echo "$alertsign Failed to update development packages. Yay exit code: $exitcode"
+		echo -e "$alertsign Failed to update development packages. Yay exit code: $exitcode"
 		break;;
 	7 )
-		echo "$alertsign Failed to install required AUR packages. Yay exit code: $exitcode"
+		echo -e "$alertsign Failed to install required AUR packages. Yay exit code: $exitcode"
 		break;;
 	8 )
-		echo "$infosign Exiting installer on user prompt [Pre-installation exit: 8]"
+		echo -e "$infosign Exiting installer on user prompt [Pre-installation exit: 8]"
 		exit 8;;
 	9 )
-		echo "$infosign Exiting installer on user prompt [Yay setup aborted: 9]"
+		echo -e "$infosign Exiting installer on user prompt [Yay setup aborted: 9]"
 		exit 9;;
 	10 )
-		echo "$infosign Exiting installer on user prompt [Configuration swap aborted: 10]"
+		echo -e "$infosign Exiting installer on user prompt [Configuration swap aborted: 10]"
 		exit 10;;
 esac
 echo "Failed command logged in file located at \"$logfile\""
@@ -187,6 +187,7 @@ setup_yay() {
 		0 ) 
 			break;;
 		1 ) 
+			echo -e "$infosign If you wish to skip installing yay (because you use a different AUR helper or otherwise), use -noyay flag when launching the installer."
 			command_fail 9
 	esac
 	echo "Setting up yay..."
@@ -229,7 +230,7 @@ config_change() {
 	echo "Done!"
 
 	echo "Moving required font files to ~/.local/share/fonts/"
-	mkdir -p /home/$USER/.local/share
+	mkdir -p /home/$USER/.local/share/fonts
 	mv $dotpath/fonts/* /home/$USER/.local/share/fonts
 	echo "Moved!"
 	sed -i 's/s_config="0"/s_config="1"/' $flagpath
