@@ -11,6 +11,11 @@ modifiedconfigs=("/hypr" "/dunst" "/fastfetch" "/kitty" "/waybar" "/rofi" "/scri
 source $flagpath
 
 s_noyay="0"
+alertsign="[ \033[1m!\033[0m ]"
+checksign="[ ✔ ]"
+crosssign="[ ✖ ]"
+infosign="[ \033[1mi\033[0m ]"
+questionsign="[ \033[1m?\033[0m ]"
 
 case "$1" in
 	"-noyay" ) 
@@ -42,7 +47,7 @@ if [ "$2" = "-N" ]; then
 fi
 
 while true; do
-	read -rp "$1 $responsebox " response
+	read -rp "$questionsign $1 $responsebox " response
 	response="${response:-$defaultresponse}"
 	case "$response" in
 		[Yy]* )
@@ -67,34 +72,34 @@ return $exitcode
 command_fail() {
 case "$1" in
 	1 )
-		echo "Failed to update pacman db. Pacman exit code: $exitcode"
+		echo "$alertsign Failed to update pacman db. Pacman exit code: $exitcode"
 		break;;
 	2 )
-		echo "Failed to install pacman packages. Pacman exit code: $exitcode"
+		echo "$alertsign Failed to install pacman packages. Pacman exit code: $exitcode"
 		break;;
 	3 )
-		echo "Failed to clone yay repository. Git exit code: $exitcode"
+		echo "$alertsign Failed to clone yay repository. Git exit code: $exitcode"
 		break;;
 	4 )
-		echo "Failed to build yay. Makepkg exit code: $exitcode"
+		echo "$alertsign Failed to build yay. Makepkg exit code: $exitcode"
 		break;;
 	5 )
-		echo "Failed to generate development package database. Yay exit code: $exitcode"
+		echo "$alertsign Failed to generate development package database. Yay exit code: $exitcode"
 		break;;
 	6 )
-		echo "Failed to update development packages. Yay exit code: $exitcode"
+		echo "$alertsign Failed to update development packages. Yay exit code: $exitcode"
 		break;;
 	7 )
-		echo "Failed to install required AUR packages. Yay exit code: $exitcode"
+		echo "$alertsign Failed to install required AUR packages. Yay exit code: $exitcode"
 		break;;
 	8 )
-		echo "Exiting installer on user prompt [Pre-installation exit: 8]"
+		echo "$infosign Exiting installer on user prompt [Pre-installation exit: 8]"
 		exit 8;;
 	9 )
-		echo "Exiting installer on user prompt [Yay setup aborted: 9]"
+		echo "$infosign Exiting installer on user prompt [Yay setup aborted: 9]"
 		exit 9;;
 	10 )
-		echo "Exiting installer on user prompt [Configuration swap aborted: 10]"
+		echo "$infosign Exiting installer on user prompt [Configuration swap aborted: 10]"
 		exit 10;;
 esac
 echo "Failed command logged in file located at \"$logfile\""
@@ -123,39 +128,44 @@ show_progress() {
 	echo "Progress:"
 	echo
 	if [ "$s_pacman" = "0" ]; then
-		echo "[ ✖ ] Required pacman packages have not been installed yet."
+		echo "$crosssign Required pacman packages have not been installed yet."
 	else
-		echo "[ ✔ ] Required pacman packages installed."
+		echo "$checksign Required pacman packages installed."
 	fi
 	if [ "$s_noyay" = "0" ]; then
 		if [ "$s_yay" = "0" ]; then
-			echo "[ ✖ ] Required AUR packages have not been installed yet."
+			echo "$crosssign Required AUR packages have not been installed yet."
 		else
-			echo "[ ✔ ] Required AUR packages installed."
+			echo "$checksign Required AUR packages installed."
 		fi
 	fi
 
 	if [ "$s_config" = "0" ]; then
-		echo "[ ✖ ] Config files have not been replaced yet."
+		echo "$crosssign Config files have not been replaced yet."
 	else
-		echo "[ ✔ ] Config files replaced."
+		echo "$checksign Config files replaced."
 	fi
 	
 	if [ "$s_walls" = "0" ]; then
-		echo -e "[ \033[1mi\033[0m ] Wallpapers available."
+		echo -e "$infosign Wallpapers available."
 	fi
 	echo
 	test_tty
 	if [ "$s_intty" = "1" ]; then
-		echo -e "[ \033[1m!\033[0m ] It is detected that you're currently not on a tty! It is recommended to run this script in a tty to avoid any potential issues."
+		echo -e "$alertsign It is detected that you're currently not on a tty! It is recommended to run this script in a tty to avoid any potential issues."
 	fi
 	if [ "$s_noyay" = "1" ]; then
-		echo -e "[ \033[1m!\033[0m ] -noyay flag was used. Install required AUR packages in your preferred way."
+		echo -e "$alertsign -noyay flag was used. Install required AUR packages (located at $yaypkglist) in your preferred way."
 	fi
-	[ "$s_intty" = "0" ] && confirm "Proceed with installation?" || confirm "Proceed with installation? (Not recommended)" -N
+
+	if [ "$s_intty" = "0" ]; then
+		confirm "Proceed with installation?" 
+	else
+		confirm "Proceed with installation? (Not recommended)" -N
+	fi
 	case "$?" in
 		0 )
-			return 0;;
+			return;;
 		1 )
 			command_fail 8
 	esac
@@ -219,15 +229,8 @@ config_change() {
 	echo "Done!"
 
 	echo "Moving required font files to ~/.local/share/fonts/"
-	if [ -d "/home/$USER/.local/share/fonts" ]; then
-		echo "Fonts directory already exists..."
-		mv $dotpath/fonts/* /home/$USER/.local/share/fonts/
-	elif [ -d "/home/$USER/.local/share" ]; then
-		mv $dotpath/fonts /home/$USER/.local/share/
-	else
-		mkdir /home/$USER/.local/share
-		mv $dotpath/fonts /home/$USER/.local/share/
-	fi
+	mkdir -p /home/$USER/.local/share
+	mv $dotpath/fonts/* /home/$USER/.local/share/fonts
 	echo "Moved!"
 	sed -i 's/s_config="0"/s_config="1"/' $flagpath
 	return
@@ -237,9 +240,9 @@ wallpapers() {
 	confirm "Do you want wallpapers?"
 	case "$?" in
 		0 )
-			echo "wallset command requires any wallpapers to be located in /home/$USER/Pictures/Wallpapers/ for it to work."
 			break;;
 		1 )
+			echo "wallset command requires any wallpapers to be located in /home/$USER/Pictures/Wallpapers/ for it to work."
 			return;;
 	esac
 	git clone --single-branch --branch media https://github.com/pinkSakoora/.dotfiles.git $dotpath/walls
@@ -257,11 +260,13 @@ bigtext
 show_progress
 [ "$s_pacman" = "0" ] && \
 	pacman_install
-if ! command_exists yay; then
-	setup_yay
+if [ "$s_noyay" = "0" ]; then
+	if ! command_exists yay; then
+		setup_yay
+	fi
+	[ "$s_yay" = "0" ] && \
+		yay_install
 fi
-[ "$s_yay" = "0" ] && \
-	yay_install
 [ "$s_config" = "0" ] && \
 	config_change
 [ "$s_walls" = "0" ] && \
