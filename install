@@ -113,11 +113,10 @@ case "$1" in
 	14 )
 		echo -e "$alertsign Failed to clone zsh-history-substring-search repository. Git exit code: $exitcode"
 		exit 14;;
-
 esac
 echo "Failed command logged in file located at \"$logfile\""
 echo "Installation failed with status: $1"
-exit $exitcode
+exit $1
 }
 
 test_tty() {
@@ -153,6 +152,12 @@ show_progress() {
 		fi
 	fi
 
+	if [ "$s_zsh" = "0" ]; then
+		echo "$crosssign Zsh has not been configured yet."
+	else
+		echo "$checksign Zsh configured."
+	fi
+
 	if [ "$s_config" = "0" ]; then
 		echo "$crosssign Config files have not been replaced yet."
 	else
@@ -165,10 +170,10 @@ show_progress() {
 	echo
 	test_tty
 	if [ "$s_intty" = "1" ]; then
-		echo -e "$alertsign It is detected that you're currently not on a tty! It is recommended to run this script in a tty to avoid any potential issues."
+		echo -e "$infosign It is detected that you're currently not on a tty! It is recommended to run this script in a tty to avoid any potential issues."
 	fi
 	if [ "$s_noyay" = "1" ]; then
-		echo -e "$alertsign -noyay flag was used. Install required AUR packages (located at $yaypkglist) in your preferred way."
+		echo -e "$infosign -noyay flag was used. Install required AUR packages (located at $yaypkglist) in your preferred way."
 	fi
 
 	if [ "$s_intty" = "0" ]; then
@@ -237,6 +242,7 @@ setup_zsh() {
 	mv $dotpath/.zshrc /home/$USER/.zshrc
 
 	sed -i 's/s_zsh="0"/s_zsh="1"/' $flagpath
+	return
 }
 
 config_change() {
