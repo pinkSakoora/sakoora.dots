@@ -2,7 +2,6 @@ archlinux-xdg-menu
 cmake
 cpio
 curl
-dunst
 fastfetch
 gcc
 gnome-keyring
@@ -13,6 +12,7 @@ hyprpicker
 hyprpolkitagent
 hyprsunset
 kitty
+mako
 meson
 nautilus
 neovim
