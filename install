@@ -221,18 +221,18 @@ yay_install() {
 	echo "Installing yay packages..."
 	execute yay -Y --gendb --noconfirm || command_fail 5
 	execute yay -Syu --devel --noconfirm || command_fail 6
-	execute yay -S --noconfirm - < $yaypkglist || command_fail 7
+	execute yay -S --needed --noconfirm - < $yaypkglist || command_fail 7
 	sed -i 's/s_yay="0"/s_yay="1"/' $flagpath
 	echo "AUR packages installed."
 	return
 }
 
 setup_zsh() {
-	local zshdir="/home$USER/.zsh"
+	local zshdir="/home/$USER/.zsh"
 	echo "Changing default shell to zsh..."
-	execute sudo chsh -s /usr/bin/zsh || command_fail 11
+	execute sudo chsh -s /usr/bin/zsh $USER || command_fail 11
 
-	append_suffix "/home/$USER/.zsh" "-pre-sakoora"
+	append_suffix "$zshdir" "-pre-sakoora"
 	mkdir $zshdir
 	execute git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $zshdir/zsh-syntax-highlighting || command_fail 12
 	execute git clone https://github.com/zsh-users/zsh-autosuggestions $zshdir/zsh-autosuggestions || command_fail 13
@@ -257,7 +257,7 @@ config_change() {
 	echo "Renaming preexisting config files..."
 	local file
 	for file in "${modifiedconfigs[@]}"; do
-		append_suffix "/home/$USER/.config$file" "-pre-sakoora"
+		append_suffix "$file" "-pre-sakoora"
 	done
 	echo "Old config files have been renamed to [config_folder]-pre-sakoora."
 
