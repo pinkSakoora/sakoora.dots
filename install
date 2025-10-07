@@ -101,6 +101,19 @@ case "$1" in
 	10 )
 		echo -e "$infosign Exiting installer on user prompt [Configuration swap aborted: 10]"
 		exit 10;;
+	11 )
+		echo -e "$alertsign Failed to change default login shell to zsh. Chsh exit code: $exitcode"
+		exit 11;;
+	12 )
+		echo -e "$alertsign Failed to clone zsh-syntax-highlighting repository. Git exit code: $exitcode"
+		exit 12;;
+	13 )
+		echo -e "$alertsign Failed to clone zsh-autosuggestions repository. Git exit code: $exitcode"
+		exit 13;;
+	14 )
+		echo -e "$alertsign Failed to clone zsh-history-substring-search repository. Git exit code: $exitcode"
+		exit 14;;
+
 esac
 echo "Failed command logged in file located at \"$logfile\""
 echo "Installation failed with status: $1"
