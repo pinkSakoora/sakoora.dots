@@ -228,7 +228,7 @@ yay_install() {
 setup_zsh() {
 	local zshdir="/home/$USER/.zsh"
 	echo "$SHELL" | grep -sq zsh
-	if [ "$?" -ne "1" ]; then
+	if [ "$?" = "1" ]; then
 		echo "Changing login shell to zsh..."
 		execute sudo chsh -s /usr/bin/zsh $USER || command_fail 11
 	else
