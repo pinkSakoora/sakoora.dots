@@ -29,4 +29,3 @@ waybar
 xdg-desktop-portal-gtk
 xdg-desktop-portal-hyprland
 zsh
-zsh-completions
