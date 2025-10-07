@@ -6,7 +6,7 @@ pkglist="/home/$USER/.dotfiles/pkglist.txt"
 yaypkglist="/home/$USER/.dotfiles/foreignpkglist.txt"
 configfolder="/home/$USER/.config"
 
-modifiedconfigs=("/hypr" "/dunst" "/fastfetch" "/kitty" "/waybar" "/rofi" "/scripts")
+modifiedconfigs=("/hypr" "/dunst" "/fastfetch" "/kitty" "/waybar" "/rofi" "/scripts" "/starship.toml")
 
 source $flagpath
 
@@ -29,7 +29,7 @@ cat <<"EOF"
            | |                            | |     | |      
   ___  __ _| | _____   ___  _ __ __ _   __| | ___ | |_ ___ 
  / __|/ _` | |/ / _ \ / _ \| '__/ _` | / _` |/ _ \| __/ __|
- \__ \ (_| |   < (_) | (_) | | | (_| || (_| | (_) | |_\__ \[ \033[1mi\033[0m ] 
+ \__ \ (_| |   < (_) | (_) | | | (_| || (_| | (_) | |_\__ \
  |___/\__,_|_|\_\___/ \___/|_|  \__,_(_)__,_|\___/ \__|___/
                                                            
                                                            
@@ -182,7 +182,7 @@ pacman_install() {
 
 setup_yay() {
 	echo "The next part of the installation requires yay, which has not been detected on your system."
-	confirm "Install yay now?"
+	confirm "Do you want to install yay now?"
 	case $? in
 		0 ) 
 			break;;
@@ -209,6 +209,23 @@ yay_install() {
 	return
 }
 
+setup_zsh() {
+	local zshdir="/home$USER/.zsh"
+	echo "Changing default shell to zsh..."
+	execute sudo chsh -s /usr/bin/zsh || command_fail 11
+
+	append_suffix "/home/$USER/.zsh" "-pre-sakoora"
+	mkdir $zshdir
+	execute git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $zshdir/zsh-syntax-highlighting || command_fail 12
+	execute git clone https://github.com/zsh-users/zsh-autosuggestions $zshdir/zsh-autosuggestions || command_fail 13
+	execute git clone https://github.com/zsh-users/zsh-history-substring-search $zshdir/zsh-history-substring-search || command_fail 14
+
+	append_suffix "/home/$USER/.zshrc" "-pre-sakoora"
+	mv $dotpath/.zshrc /home/$USER/.zshrc
+
+	sed -i 's/s_zsh="0"/s_zsh="1"/' $flagpath
+}
+
 config_change() {
 	confirm "Proceed with changing configs?"
 	case $? in
@@ -221,7 +238,7 @@ config_change() {
 	echo "Renaming preexisting config files..."
 	local file
 	for file in "${modifiedconfigs[@]}"; do
-		append_suffix "$file" "-pre-sakoora"
+		append_suffix "/home/$USER/.config$file" "-pre-sakoora"
 	done
 	echo "Old config files have been renamed to [config_folder]-pre-sakoora."
 
@@ -268,6 +285,8 @@ if [ "$s_noyay" = "0" ]; then
 	[ "$s_yay" = "0" ] && \
 		yay_install
 fi
+[ "$s_zsh" = "0" ] && \
+	setup_zsh
 [ "$s_config" = "0" ] && \
 	config_change
 [ "$s_walls" = "0" ] && \
