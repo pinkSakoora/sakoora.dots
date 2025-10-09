@@ -1,15 +1,15 @@
+include=~/.cache/wal/colors-mako-2
+
 max-history=10
 sort=-priority
 
 font=FiraCode Nerd Font Mono
-background-color=#100E0FA5
-width=500
+width=400
 height=200
-outer-margin=4,0,4,4
-margin=0,-2,0,0
+outer-margin=0
+margin=4,-2,4,0
 padding=18,36,18,32
-border-size=2
-border-color=#BABABAFF
+border-size=0
 border-radius=10,0,0,10
 
 icons=1
