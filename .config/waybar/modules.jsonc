@@ -29,7 +29,7 @@
         },
         "format": "{icon}",
         "format-icons": ["▏▏▏▏", "▋▏▏▏", "▋▋▏▏", "▋▋▋▏", "▋▋▋▋"],
-	"tooltip-format": "{capacity}% ({timeTo})"
+	"tooltip-format": "{capacity}% ({timeTo})",
 	"on-click": "~/.config/scripts/powersaving"
     },
     "clock": {
