@@ -2,9 +2,11 @@ archlinux-xdg-menu
 cmake
 cpio
 curl
+debugedit
 fastfetch
-gcc
+fakeroot
 gnome-keyring
+go
 hypridle
 hyprland
 hyprlock
@@ -15,8 +17,6 @@ kitty
 mako
 meson
 nautilus
-neovim
-papirus-icon-theme
 pkg-config
 pipewire-pulse
 rofi
@@ -24,8 +24,6 @@ starship
 swww
 ttf-firacode-nerd
 ttf-noto-nerd
-vi
-vim
 waybar
 xdg-desktop-portal-gtk
 xdg-desktop-portal-hyprland
