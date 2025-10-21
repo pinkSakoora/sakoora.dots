@@ -1,0 +1,76 @@
+configuration {{
+	drun-display-format: 	"{{icon}} [<span foreground="{color1}"><span background="{color1}" foreground="{background}"><b>{{name}}</b></span></span>]\n [<span foreground="{foreground}"><small>{{generic}}</small></span>]";
+}}
+
+* {{
+    active-background: {color2};
+    active-foreground: @foreground;
+    normal-background: @background;
+    normal-foreground: @foreground;
+    urgent-background: {color1};
+    urgent-foreground: @foreground;
+
+    alternate-active-background: @background;
+    alternate-active-foreground: @foreground;
+    alternate-normal-background: @background;
+    alternate-normal-foreground: @foreground;
+    alternate-urgent-background: @background;
+    alternate-urgent-foreground: @foreground;
+
+    selected-active-background: {color1};
+    selected-active-foreground: @foreground;
+    selected-normal-background: {color2}A5;
+    selected-normal-foreground: @background;
+    selected-urgent-background: {color3};
+    selected-urgent-foreground: @foreground;
+
+    background-color: @background;
+    background: #00000000;
+    foreground: {foreground};
+    border-color: {color1};
+}}
+
+#window {{
+    background-color: {background}D6;
+}}
+
+#listview {{
+    border-color: @border-color;
+    background-color: {color3}1E;
+}}
+
+#element-text, element-icon {{
+    text-color:       inherit;
+}}
+
+#element.selected.normal {{
+    background-color: @selected-normal-background;
+    text-color: @selected-normal-foreground;
+}}
+
+#element.selected.urgent {{
+    background-color: @selected-urgent-background;
+    text-color: @selected-urgent-foreground;
+}}
+
+#element.selected.active {{
+    background-color: @selected-active-background;
+    text-color: @selected-active-foreground;
+}}
+
+#scrollbar {{
+    background-color: 	0;
+    handle-color:	{color1}D8;
+}}
+
+textbox-info, prompt {{
+    text-color:		@foreground;
+}}
+
+upperinfo {{
+    border-color:	@foreground;
+}}
+
+inputbar {{
+    background-color:	@selected-normal-background;
+}}
