@@ -133,8 +133,8 @@ element-icon {
 }
 
 textbox-info {
-	padding:		4px 0px 10px 0px;
+	padding:		4px 0px 6px 0px;
 	expand:			true;
-	content:		"pinksakoora on Arch Linux, running Hyprland.";
+	content:		"There seems to be some issue in loading info text, check if ~/.config/rofi/text.rasi exists?";
 }
-
+@import "./text.rasi"

@@ -1,0 +1,3 @@
+textbox-info {
+	content: "~/.config/scripts/rofitext is not executing properly!";
+}
