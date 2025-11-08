@@ -1,3 +1,4 @@
 background-color={color0}
 text-color={color1}
 format=<span background="{color1}" foreground="{color0}"><b>%s</b></span>\n<span foreground="{color7}">%b</span>\n<small>via %a</small>
+progress-color=over {color2}A5

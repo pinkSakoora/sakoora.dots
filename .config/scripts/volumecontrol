@@ -1,0 +1,47 @@
+#!/bin/zsh
+
+send_notification() {
+	case "$1" in
+		"-i" )
+			notify-send -h int:value:$(pamixer --get-volume) -h string:x-canonical-private-synchronous:volume -u low --app-name="volume control" "Volume increased" "Volume: $(pamixer --get-volume-human)";;
+		"-d" )
+			notify-send -h int:value:$(pamixer --get-volume) -h string:x-canonical-private-synchronous:volume -u low --app-name="volume control" "Volume decreased" "Volume: $(pamixer --get-volume-human)";;
+		"-m" )
+			notify-send -h string:x-canonical-private-synchronous:volume -u low --app-name="volume control" "Muted" "Volume muted.";;
+		"-um" )
+			notify-send -h int:value:$(pamixer --get-volume) -h string:x-canonical-private-synchronous:volume -u low --app-name="volume control" "Unmuted" "Volume: $(pamixer --get-volume-human)";;
+		"-min" )
+			notify-send -h string:x-canonical-private-synchronous:volume -u low --app-name="volume control" "Volume decreased" "Minimum volume";;
+		"-max" )
+			notify-send -h int:value:100 -h string:x-canonical-private-synchronous:volume -u low --app-name="volume control" "Volume increased" "Maximum volume";;
+	esac
+}
+
+volume_change() {
+	[ "$(pamixer --get-mute)" = "true" ] && pamixer -u
+	if [ "$1" = "-i" ]; then
+		if [ "$(pamixer --get-volume)" = "100" ]; then
+			send_notification -max
+		else
+			pamixer -i 5
+			send_notification -i
+		fi
+	elif [ "$1" = "-d" ]; then
+		if [ "$(pamixer --get-volume)" = "0" ]; then
+			send_notification -min
+		else
+			pamixer -d 5
+			send_notification -d
+		fi
+	fi
+}
+
+case "$1" in
+	"--increase" )
+		volume_change -i;;
+	"--decrease" )
+		volume_change -d;;
+	"--togglemute" )
+		pamixer -t
+		[ "$(pamixer --get-mute)" = "true" ] && send_notification -m || send_notification -um;;
+esac
