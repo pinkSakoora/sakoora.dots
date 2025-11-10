@@ -1,20 +1,140 @@
-configuration {
-	modes: "window,drun,run,ssh,filebrowser";
-	font: "mono 12";
-	location: 1;
-	display-window: "Windows";
-	display-drun: "Applications";
-	drun-display-format: "{icon} {name}";
-	icon-theme: "Papirus-Dark";
-	show-icons: true;
-  timeout {
-      action: "kb-cancel";
-      delay:  0;
-  }
-  filebrowser {
-      directories-first: true;
-      sorting-method:    "name";
-  }
-}
-@theme "~/.cache/wal/colors-rofi-dark.rasi"
+@theme "~/.cache/wal/colors-rofi-pink.rasi"
 
+configuration {
+	modes: 			"drun";
+	location:		8;
+	display-drun: 		"drun";
+	icon-theme: 		"Papirus-Dark";
+	show-icons: 		true;
+}
+
+* {
+	padding:		0px;
+	margin:			0px;
+	font: 			"FiraCode Nerd Font Mono 12";
+}
+
+window {
+	transparency: 		"real";
+	location: 		"west";
+	fullscreen: 		false;
+	width:			50%;
+	height:			calc( 100% - 8px );
+	enabled:		true;
+	border-radius:		0px 10px 10px 0px;
+	orientation:		vertical;
+	children:		[ topcont, listview ];
+	spacing:		2%;
+}
+
+topcont {
+	expand:			false;
+	orientation:		vertical;
+	children:		[ upperinfo, querybox ];
+	spacing:		2%;
+}
+
+upperinfo {
+	children:		[ dummy, textbox-info ];
+	orientation:		horizontal;
+	border:			0px 0px 2px 0px;
+}
+
+dummy {
+	expand:			true;
+	padding:		12px;
+}
+
+querybox {
+	orientation:		horizontal;
+	margin:			0 0 0 2%;
+	children:		[ inputbar, promptbox ];
+}
+
+inputbar {
+	expand:			true;
+	children:		[ searchbox, entrybox ];
+	border-radius:		10px;
+	margin:			0 10% 0 0;
+}
+
+searchbox {
+	expand:			false;
+	orientation:		vertical;
+	children:		[ sdummy, textbox-search, sdummy ];
+}
+
+sdummy {
+	expand:			true;
+}
+
+entrybox {
+	expand:			true;
+	orientation:		vertical;
+	children:		[ sdummy, entry, sdummy ];
+}
+
+textbox-search {
+	content:		"  ";
+	font:			"Josefin Sans 24";
+	expand:			false;
+}
+
+promptbox {
+	children:		[ pdummy, prompt, pdummy ];
+	orientation:		vertical;
+	expand:			false;
+	margin:			0 calc( 2% + 8px ) 0 10%;
+}
+
+prompt {
+	expand:			true;
+	font:			"Josefin Sans Bold 48";
+}
+
+pdummy {
+	expand:			false;
+	padding:		2px;
+}
+
+listview {
+	margin:			1% 10px 10px 2%;
+	columns: 		1;
+	dynamic:		true;
+	scrollbar:		true;
+	scrollbar-width:	10px;
+	cycle:			true;
+	spacing:		0px;
+	layout:			vertical;
+	reverse:		false;
+	flow:			horizontal;
+	fixed-columns:		false;
+	require-input:		false;
+	border-radius:		10px;
+}
+
+scrollbar {
+	margin:			10px 0px 10px 1%;
+	handle-width:		10px;
+	border-radius:		10px;
+	handle-rounded-corners:	true;
+}
+
+element {
+	children:		[ element-icon, element-text ];
+	orientation:		horizontal;
+	padding:		10px;
+	border-radius:		10px;
+}
+
+element-icon {
+	size:			48;
+	border-radius:		10px;
+}
+
+textbox-info {
+	padding:		4px 0px 6px 0px;
+	expand:			true;
+	content:		"There seems to be some issue in loading info text, check if ~/.config/rofi/text.rasi exists?";
+}
+@import "./text.rasi"
