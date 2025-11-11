@@ -295,7 +295,7 @@ wallpapers() {
 
 main() {
 logfile="/home/$USER/.dotfiles/s_info$$.log"
-touch logfile
+touch $logfile
 bigtext
 show_progress
 [ "$s_pacman" = "0" ] && \
