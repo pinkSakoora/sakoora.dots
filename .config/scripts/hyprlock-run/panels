@@ -16,7 +16,7 @@ grim "$cache_dir/screenshot.png"
 
 magick \( "$cache_dir"/screenshot.png -crop "$initial_cutout_size"+"$initial_cutout_offset" -scale 10% -blur 0x5 -resize 1000% +repage \) \
 	\( -size "$initial_cutout_size" xc:"$background" -alpha set -channel A -evaluate set 40% \) \
-	-compose overlay -composite "$cache_dir"/combi.png
+	-composite "$cache_dir"/combi.png
 magick "$cache_dir"/combi.png -crop "$top_left_size"+"$top_left_offset" "$cache_dir"/top_left_panel.png
 magick "$cache_dir"/combi.png -crop "$bottom_left_size"+"$bottom_left_offset" "$cache_dir"/bottom_left_panel.png
 magick "$cache_dir"/combi.png -crop "$right_size"+"$right_offset" "$cache_dir"/right_panel.png
