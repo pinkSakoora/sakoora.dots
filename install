@@ -36,7 +36,7 @@ cat <<"EOF"
 EOF
 }
 
-confirm() {					# usage: confirm "Prompt" optional: -N
+confirm() {
 local response
 local defaultresponse="Y"
 local responsebox="[Y/n]"
@@ -113,6 +113,9 @@ case "$1" in
 	14 )
 		echo -e "$alertsign Failed to clone zsh-history-substring-search repository. Git exit code: $exitcode"
 		break;;
+	15 )
+		echo -e "$alertsign Hyprland is not running on current tty, launch Hyprland to continue. [Hyprland not running: 15]"
+		exit 15;;
 esac
 echo "Failed command logged in file located at \"$logfile\""
 echo "Installation failed with status: $1"
@@ -161,7 +164,13 @@ show_progress() {
 	else
 		echo "$checksign Config files replaced."
 	fi
-	
+
+	if [ "$s_hyprlock" = "0" ]; then
+		echo "$crosssign Hyprlock has not been set up for your screen resolution."
+	else
+		echo "$checksign Hyprlock set up."
+	fi
+
 	if [ "$s_walls" = "0" ]; then
 		echo -e "$infosign Wallpapers available."
 	fi
@@ -276,6 +285,95 @@ config_change() {
 	return
 }
 
+hyprlock() {
+	printenv HYPRLAND_INSTANCE_SIGNATURE &> /dev/null || command_fail 15
+
+	sizefile="$HOME/.config/hypr/sizes-hyprlock.sh"
+	sizefileconf="$HOME/.config/hypr/sizes-hyprlock.conf"
+	[ -f "$sizefile" ] && rm "$sizefile"
+	touch "$sizefile"
+	[ -f "$sizefileconf" ] && rm "$sizefileconf"
+	touch "$sizefileconf"
+	echo "Setting up hyprlock for your display resolution."
+
+	resolution=$(wlr-randr | grep "current" | awk '{print $1}')		# Check if hyprland is running or not before this
+	width=$(echo "$resolution" | cut -dx -f1)
+	height=$(echo "$resolution" | cut -dx -f2)
+	[ $((4*height/9)) -ge $((width/4)) ] && pw=$((width/4)) || pw=$((4*height/9))
+	pp=$((pw/12))
+	{
+		echo "#################"
+		echo "### UNIVERSAL ###"
+		echo "#################"
+		echo "\$body_font = $((pp/2))"
+		echo "\$huge_font = $((pp*5/2))"
+		echo "\$heading_font = $((pp*5/4))"
+		echo "\$large_font = $((pp*3/4))"
+		echo "\$small_font = $((pp*3/8))"
+
+		echo "################"
+		echo "### TOP LEFT ###"
+		echo "################"
+		echo "\$top_left_offset = $((-pw/2-pp/2)), $((pw/4+pp/2))"
+		echo "\$pw_box_offset = $((-pw/2-pp/2)), $((height/2-pp*3/2))"
+		echo "\$un_box_offset = $((-pw/2-pp/2)), $((height/2+pp*3/2))"
+		echo "\$pw_text_offset = $((width/2-pw+pp)), $((height/2))"
+		echo "\$un_text_offset = $((width/2-pw+pp)), $((height/2+pp*3))"
+		echo "\$login_text_offset = $((-pw/2-pp/2)), $((height/2+pp*5))"
+		echo "\$hostname_text_offset = $((-pw/2-pp/2)), $((height/2+pp*15/2))"
+		echo "\$un_value_offset = $((width/2-pw+pp)), $((height/2+pp*9/4))"
+		echo "\$input_field_offset = $((width/2-pw+pp/2)), $((height/2-pp*3/2))"
+		echo "\$top_left_box_size = $((pw-pp*2)), $((pp*5/2))"
+		echo "\$input_field_size = $((pw-pp*2)), $((pp*2))"
+
+		echo "###################"
+		echo "### BOTTOM LEFT ###"
+		echo "###################"
+		echo "\$bottom_left_offset = $((-pw/2-pp/2)), $((-pw/2-pp/2))"
+		echo "\$time_text_offset = $((-pw/2-pp/2)), $((-height/2-pw/4-pp*3/2))"
+		echo "\$uptime_ltext_offset = $((width/2-pw+pp*5/2)), $((height/2-pw*3/4+pp/2))"
+		echo "\$uptime_rtext_offset = $((-width/2-pp*7/2)), $((height/2-pw*3/4+pp/2))"
+
+		echo "#############"
+		echo "### RIGHT ###"
+		echo "#############"
+		echo "\$right_offset = $((pw/2+pp/2)), 0"
+		echo "\$right_bottom_box_offset = $((pw/2+pp/2)), $((height/2-pw))"
+		echo "\$network_box_offset = $((pw*3/16+pp*3/2)), $((height/2-pw*5/8+pp*2))"
+		echo "\$bluetooth_box_offset = $((pw*9/16+pp*5/2)), $((height/2-pw*5/8+pp*2))"
+		echo "\$power_box_offset = $((pw/2+pp/2)), $((height/2-pw+pp))"
+		echo "\$image_offset = $((pw/2+pp/2)), $((height/2+pw*1/8+pp*5))"
+		echo "\$media_symbol_offset = $((pw/2+pp/2)), $((-height/2+pp/2))"
+		echo "\$network_symbol_offset = $((pw*3/16+pp*3/2)), $((height/2-pw*5/8+pp*15/4))"
+		echo "\$bluetooth_symbol_offset = $((pw*9/16+pp*5/2)), $((height/2-pw*5/8+pp*15/4))"
+		echo "\$day_value_offset = $((pw/2+pp/2)), $((height/2+pw*1/8+pp*2))"
+		echo "\$date_value_offset = $((pw/2+pp/2)), $((height/2+pw*1/8+pp))"
+		echo "\$media_content_value_offset = $((pw/2+pp/2)), $((-height/2-pp/2))"
+		echo "\$media_player_value_offset = $((pw/2+pp/2)), $((-height/2-pp*5/4))"
+		echo "\$network_value_offset = $((pw*3/16+pp*3/2)), $((height/2-pw*5/8+pp*11/4))"
+		echo "\$bluetooth_value_offset = $((pw*9/16+pp*5/2)), $((height/2-pw*5/8+pp*11/4))"
+		echo "\$power_status_value_offset = $((pw/2+pp/2)), $((height/2-pw+pp*2))"
+		echo "\$power_percent_value_offset = $((pw/2+pp/2)), $((height/2-pw+pp*5/2))"
+		echo "\$power_indicator_value_offset = $((pw/2+pp/2)), $((height/2-pw+pp*4))"
+		echo "\$right_bottom_box_size = $pw, $((pw*9/8))"
+		echo "\$power_box_size = $((pw-pp*2)), $((pw*3/8))"
+		echo "\$connection_box_size = $((pw*3/8)), $((pw/4))"
+		echo "\$image_size = $((pw/3))"
+	} >> "$sizefileconf"
+	{
+		echo "initial_cutout_offset=$((width/2-pw))+$((height/2-pp/2-pw))"
+		echo "left_top_offset=0+$((pw*1/3-pp/2))"
+		echo "left_bottom_offset=0+$((pw*4/3-pp*3/2))"
+		echo "right_offset=$((pw+pp))+0"
+		echo "initial_cutout_size=$((pw*2+pp))x$((pw*2))"
+		echo "left_top_size=$((pw))x$pw"
+		echo "left_bottom_size=$((pw))x$((pw/3))"
+		echo "right_size=$((pw))x$((pw*2))"
+	} >> "$sizefile"
+	sed -i 's/s_hyprlock="0"/s_hyprlock="1"/' $flagpath
+	return
+}
+
 wallpapers() {
 	confirm "Do you want wallpapers?"
 	case "$?" in
@@ -311,6 +409,8 @@ fi
 	setup_zsh
 [ "$s_config" = "0" ] && \
 	config_change
+[ "$s_hyprlock" = "0" ] && \
+	hyprlock
 [ "$s_walls" = "0" ] && \
 	wallpapers
 bigtext
