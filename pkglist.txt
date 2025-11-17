@@ -13,6 +13,7 @@ hyprlock
 hyprpicker
 hyprpolkitagent
 hyprsunset
+imagemagick
 kitty
 mako
 meson
@@ -25,6 +26,7 @@ swww
 ttf-firacode-nerd
 ttf-noto-nerd
 waybar
+wlr-randr
 xdg-desktop-portal-gtk
 xdg-desktop-portal-hyprland
 zsh

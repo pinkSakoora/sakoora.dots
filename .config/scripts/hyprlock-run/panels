@@ -1,42 +1,22 @@
-#!/bin/zsh
+#!/bin/sh
 
-source ~/.cache/wal/colors.sh			# Pywal colors
-# source ~/.config/hypr/hyprlock-sizes		# Get size of panels according to screen size (not implemented, currently for 1920x1080px screens only)
+. "$HOME"/.cache/wal/colors.sh				# Pywal colors
+. "$HOME"/.config/hypr/sizes-hyprlock.sh		# Get size of panels according to screen size
 
-cache_dir=~/.cache/hyprlock-cache
-[ ! -d $cache_dir ] && mkdir -p $cache_dir	# Make cache directory if it's not there
+cache_dir="$HOME"/.cache/hyprlock-cache
+[ ! -d "$cache_dir" ] && mkdir -p "$cache_dir"	# Make cache directory if it's not there
 
-left_panel() {
+grim "$cache_dir/screenshot.png"
+
 # Crop screenshot to required size
 # Resize to 0.1x, apply size 5 blur, resize to 10x (essentially being 50x blur for less resources used)
 # Generate a 0.1x size overlay of $color1, 40% alpha and resize it 10x
 # Composite it on top of blurred screenshot
 # Split top and bottom panels
 
-magick \( $cache_dir/screenshot.png -crop 480x680+460+200 -scale 10% -blur 0x5 -resize 1000% +repage \) \
-	\( -size 48x68 xc:$color1 -alpha set -channel A -evaluate set 40% -resize 1000% \) \
-	-compose overlay -composite $cache_dir/left_combi.png
-magick $cache_dir/left_combi.png -crop 480x480+0+0 $cache_dir/left_top_panel.png
-magick $cache_dir/left_combi.png -crop 480x160+0+520 $cache_dir/left_bottom_panel.png
-}
-
-right_panel() {
-# Generate background rectangle
-# Generate gradient circle
-# Composite circle on top of rectangle
-# Blur half of the composite and composite on top again
-# Add $color1 overlay
-
-magick -size 480x840 xc:$background $cache_dir/right_background.png
-magick \( -size 320x320 gradient:$color1-$color2 -alpha set \) \
-	\( -size 320x320 xc:none -draw 'circle 160,160 160,0' \) \
-	-compose CopyOpacity -composite $cache_dir/right_circle.png
-magick $cache_dir/right_background.png $cache_dir/right_circle.png -geometry +130+260 -composite $cache_dir/right_background_circle.png
-magick $cache_dir/right_background_circle.png \( $cache_dir/right_background_circle.png -crop 290x840+0+0 -scale 10% -blur 0x2 -resize 1000% +repage \) \
-	-gravity west -composite $cache_dir/right_background_circle_blur.png
-magick $cache_dir/right_background_circle_blur.png \( -size 250x660 xc:none -fill $color1 -draw 'roundrectangle 0,0,249,659,50,50' -channel A -evaluate min 40% \) \
-	-geometry +40+90 -compose plus -composite $cache_dir/right_panel.png
-}
-grim "$cache_dir/screenshot.png"
-left_panel
-right_panel
+magick \( "$cache_dir"/screenshot.png -crop "$initial_cutout_size"+"$initial_cutout_offset" -scale 10% -blur 0x5 -resize 1000% +repage \) \
+	\( -size "$initial_cutout_size" xc:"$background" -alpha set -channel A -evaluate set 40% \) \
+	-compose overlay -composite "$cache_dir"/combi.png
+magick "$cache_dir"/combi.png -crop "$top_left_size"+"$top_left_offset" "$cache_dir"/top_left_panel.png
+magick "$cache_dir"/combi.png -crop "$bottom_left_size"+"$bottom_left_offset" "$cache_dir"/bottom_left_panel.png
+magick "$cache_dir"/combi.png -crop "$right_size"+"$right_offset" "$cache_dir"/right_panel.png
