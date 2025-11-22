@@ -1,8 +1,0 @@
-#!/bin/zsh
-
-if [ brightnessctl | grep "Current brightness: 100" ]; then
-	brightnessctl set 0
-else
-	brightnessctl set +20
-fi
-
