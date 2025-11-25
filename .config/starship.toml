@@ -1,30 +1,15 @@
-"$schema" = 'https://starship.rs/config-schema.json'
-
 add_newline = true
 
-format = """
-[❮ ](yellow)$username$shell
-$character$directory
-"""
+format = """[](red)$directory[](red) $character"""
 
-right_format = """$all$battery"""
+right_format = """$all"""
 
 [character]
-success_symbol = '[❯](bold green)'
-error_symbol = '[❯](bold red)'
+success_symbol = "[](green)"
+error_symbol = "[●](red)"
 
 [aws]
 symbol = "  "
-
-[battery]
-full_symbol = "󰁹"
-charging_symbol = "󰂄"
-discharging_symbol = "󰂃"
-empty_symbol = "󰂎"
-format = "[ $symbol $percentage ](cyan)"
-
-[[battery.display]]
-threshold = 100
 
 [buf]
 symbol = " "
@@ -54,18 +39,18 @@ symbol = " "
 symbol = " "
 
 [directory]
-style = "fg:bold green"
-format = '[\[ $path[$read_only]($read_only_style) \] ]($style)'
+style = "fg:bold black bg:red"
+format = '[ $path[$read_only]($read_only_style) ]($style)'
 truncation_length = 2
-truncation_symbol = '.../'
+truncation_symbol = '/'
 read_only = " 󰌾"
 home_symbol = ""
 
 [directory.substitutions]
-'/Documents' = '󰈙 Documents'
-'/Downloads' = ' Downloads'
-'/Pictures' = ' Pictures'
-'/Videos' = ' Videos'
+'/Documents' = '󰈙'
+'/Downloads' = ''
+'/Pictures' = ''
+'/Videos' = ''
 
 [docker_context]
 symbol = " "
@@ -216,24 +201,8 @@ symbol = "󱘗 "
 [scala]
 symbol = " "
 
-[shell]
-format = "on [$indicator]($style)"
-disabled = false
-style = "red bold"
-
 [swift]
 symbol = " "
-
-[time]
-disabled = false
-format = '[\[[ $time ]($style)\]](bold blue)'
-time_format = "%R %p"
-style = "yellow"
-use_12hr = true
-
-[username]
-show_always = true
-format = "[$user]($style) "
 
 [zig]
 symbol = " "
