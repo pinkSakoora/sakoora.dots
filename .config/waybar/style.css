@@ -19,7 +19,7 @@ tooltip label {
 
 window#waybar {
 	border-radius: 10px;
-	background-color: @background;
+	background-color: alpha(@background, 0.8);
 }
 
 #workspaces {
