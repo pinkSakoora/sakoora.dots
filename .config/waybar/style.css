@@ -1,141 +1,112 @@
 @import '../../.cache/wal/colors-waybar.css';
 
 * {
-    border: none;
-    border-radius: 0;
-    font-family: Zpix, "Font Awesome 6 Free", FontAwesome;
-    font-size: 20px;
-    font-weight: bold;
-    min-height: 0;
-}
-
-window#waybar {
-    background: transparent; 
-    color: @background;
-    padding: 10px 20px;
+	border: none;
+	border-radius: 50px;
+	font-family: "Josefin Sans, Fira Code Nerd Font Mono";
+	font-size: 20px;
+	min-height: 0px;
 }
 
 tooltip {
-  background: @color3;
-  border: 2px solid @background;
-  border-radius: 10px;
-  opacity: 0.8;
+	background: alpha(@foreground, 0.8);
+	border: 2px solid @background;
 }
+
 tooltip label {
-  color: @background;
+	color: @background;
+}
+
+window#waybar {
+	border-radius: 10px;
+	background-color: @background;
 }
 
 #workspaces {
-    padding: 15px 50px;
-    background: @background;
-    border-radius: 10px;
-    opacity: 1.0;
+	margin: 15px 0px;
+	padding: 0px 50px;
+	background: none;
 }
 
 #workspaces button {
-    padding: 0 10px;
-    background: transparent;
-    color: @color1;
+	margin: 0px;
+	padding: 0px 10px;
+	background: none;
+	color: @color2;
+	transition: padding 0.2s ease-out;
 }
 
 #workspaces button.empty {
-    color: @color8;
+	color: @foreground;
 }
 
 #workspaces button.active {
-    color: @color3;
+	background-color: @color1;
+	color: @background;
+	padding: 0px 20px;
+	transition: padding 0.1s ease-out;
 }
 
 #clock {
-    padding: 0px 20px;
-    color:@color3;
+	color: @foreground;
+	font-weight: bold;
 }
 
 #battery {
-    color: @color3;
-    padding: 0px 10px;
-    opacity: 1.0;
+	color: @background;
+	padding: 0px 80px;
+	background: @color2;
+	background: linear-gradient(90deg,@color2 0%, @color2 50%, @background 50%);
+	margin: 15px 50px 15px 0px;
+	transition: color 0.2s linear, background 0.3s cubic-bezier(.17,.67,.3,1.35);
 }
 
-#battery.charging {
-    color: @color1;
-    padding: 0px 10px;
-    opacity: 1.0;
+#battery.low {
+	background: linear-gradient(90deg,@color2 0%, @color2 20%, @background 20%);
+	color: @color2;
 }
 
-@keyframes blink {
-    to {
-        background-color: #ffffff;
-        color: black;
-    }
+#battery.medlow {
+	background: linear-gradient(90deg,@color2 0%, @color2 40%, @background 40%);
+	color: @color2;
 }
 
-#battery.warning:not(.charging) {
-    color: white;
-    padding: 0px 10px;
-    border-radius: 10px;
-    animation-name: blink;
-    animation-duration: 0.5s;
-    animation-timing-function: steps(12);
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+#battery.med {
+	background: linear-gradient(90deg,@color2 0%, @color2 60%, @background 60%);
 }
 
-#pulseaudio-slider {
-    min-width: 100px;
-    border-radius: 20px;
-    padding: 0px 20px;
-    opacity: 1.0;
+#battery.medhigh {
+	background: linear-gradient(90deg,@color2 0%, @color2 80%, @background 80%);
 }
 
-#pulseaudio-slider slider {
-    min-height: 10px;
-    min-width: 10px;
-    background: @background;
-    opacity: 1.0;
-    border-radius: 10px;
+#battery.high {
+	background: linear-gradient(90deg,@color2 0%, @color2 100%, @background 100%);
 }
 
-#pulseaudio-slider trough {
-    min-height: 10px;
-    min-width: 80px;
-    border-radius: 3px;
-    background-color: @color1;
+@keyframes lowBlink {
+	25% {
+		background: linear-gradient(90deg,@color2 0%, @color1 20%, @background 20%);
+	}	
+	50% {
+		background: linear-gradient(90deg,@color1 0%, @color1 20%, @background 20%);
+	}
+	75% {
+		background: linear-gradient(90deg,@color1 0%, @color2 20%, @background 20%);
+	}
+	to {
+		background: linear-gradient(90deg,@color1 0%, @color2 20%, @background 20%);
+	}
 }
 
-#pulseaudio-slider highlight{
-    min-width: 7px;
-    border-radius: 3px;
-    background-color: @color3;
+#battery.low:not(.charging) {
+	animation: lowBlink 2s ease-in-out infinite;
+}
+
+#status {
+	color: @color1;
+	margin: 15px 25px;
 }
 
 #network {
-    color: @color3;
-    padding: 0px 20px;
-}
-
-#custom-playing {
-    color: @color3;
-    padding: 0px 20px;
-}
-
-#image album-art {
-    border-radius: 10px;
-}
-
-#right {
-    background-color: @background;
-    color: @color1;
-    border-radius: 10px;
-    padding: 0px 10px;
-    opacity: 1.0;
-}
-
-#audio {
-    padding: 0px 20px;
-}
-
-#custom-text {
-    padding: 0px 20px;
-    color: @color1;
+	margin: 0px 25px;
 }
