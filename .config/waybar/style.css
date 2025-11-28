@@ -131,8 +131,8 @@ window#waybar {
 }
 
 #power {
-	margin: 0px 20px 0px 10px;
-	padding: 0px 20px;
+	margin: 0px;
+	padding: 0px 20px 0px 0px;
 	color: @color1;
 }
 
@@ -148,14 +148,10 @@ window#waybar {
 }
 
 #custom-term, #custom-apps {
-	margin: 15px 0px 15px 20px;
+	margin: 15px 20px 15px 0px;
 	padding: 0px 20px;
 	color: @background;
 	background-color: @color1;
-}
-
-#custom-term {
-	margin: 15px 0px;
 }
 
 #audio {

@@ -59,9 +59,9 @@
 	"group/right": {
 		"orientation": "horizontal",
 		"modules": [
-		"custom/term",
+		"group/power",
 		"custom/apps",
-		"group/power"
+		"custom/term"
 		]
 	},
 	"group/power": {
@@ -115,7 +115,6 @@
 	"group/status": {
 		"orientation": "horizontal",
 		"modules": [
-			"mpris",
 			"network",
 			"bluetooth"
 		]
