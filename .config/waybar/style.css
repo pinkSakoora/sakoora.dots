@@ -53,6 +53,7 @@ window#waybar {
 }
 
 #battery {
+	font-family: "Fira Code Nerd Font Mono";
 	color: @background;
 	padding: 0px 80px;
 	background: @color2;

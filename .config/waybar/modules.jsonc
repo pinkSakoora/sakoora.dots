@@ -39,7 +39,8 @@
 		"format-charging": "",
 		"format-plugged": "",
 		"format": "?",
-		"format-full": ""
+		"format-full": "",
+		"on-click-right": "~/.config/scripts/powersaving"
 	},
 	"clock": {
 		"tooltip-format": "{:%A, %d/%m/%y}"
