@@ -82,5 +82,11 @@
 		"format": "",
 		"on-click": "rofi -show drun",
 		"tooltip": false
+	},
+	"custom/rightexpander": {
+		"format": "󰅁"
+	},
+	"custom/leftexpander": {
+		"format": "󰅂"
 	}
 }

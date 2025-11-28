@@ -116,12 +116,12 @@ window#waybar {
 	border-radius: 0px 0px 10px 10px;
 }
 
-#left {
+#leftexpand {
 	background-color: alpha(@background, 0.8);
 	border-radius: 0px 0px 10px 0px;
 }
 
-#right {
+#rightexpand {
 	background-color: alpha(@background, 0.8);
 	border-radius: 0px 0px 0px 10px;
 }
@@ -131,13 +131,20 @@ window#waybar {
 }
 
 #power {
-	margin: 15px 20px 15px 10px;
+	margin: 0px 20px 0px 10px;
 	padding: 0px 20px;
 	color: @color1;
 }
 
+#custom-rightexpander, #custom-leftexpander {
+	color: @foreground;
+	padding: 0px 30px;
+}
+
 #custom-shutdown, #custom-restart, #custom-lock, #custom-logout {
+	color: @color2;
 	margin: 0px 10px;
+	font-size: 25px;
 }
 
 #custom-term, #custom-apps {
@@ -148,7 +155,7 @@ window#waybar {
 }
 
 #custom-term {
-	margin: 15px 0px 15px 50px;
+	margin: 15px 0px;
 }
 
 #audio {
@@ -158,7 +165,7 @@ window#waybar {
 }
 
 #brightness {
-	margin: 15px 50px 15px 20px;
+	margin: 15px 0px 15px 20px;
 	padding: 0px 10px;
 	background: @color2;
 }

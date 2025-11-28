@@ -4,13 +4,13 @@
 	"margin": "0px",
 	"fixed-center": true,
 	"modules-left": [
-		"group/left",
+		"group/leftexpand",
 	],
 	"modules-center": [
 		"group/center"
 	],
 	"modules-right": [
-		"group/right",
+		"group/rightexpand",
 	],
 	"reload_style_on_change": true,
 	"include": [
@@ -24,12 +24,37 @@
 		"group/holder"
 		]
 	},
+	"group/leftexpand": {
+		"orientation": "horizontal",
+		"modules": [
+		"custom/leftexpander",
+		"group/left"
+		],
+		"drawer": {
+			"transition-left-to-right": false,
+			"transition-duration": 300,
+			"children-class": "left-group",
+			"click-to-reveal": true
+		}
+	},
 	"group/left": {
 		"orientation": "horizontal",
 		"modules": [
 		"group/audio",
 		"group/brightness"
 		]
+	},
+	"group/rightexpand": {
+		"orientation": "horizontal",
+		"modules": [
+		"custom/rightexpander",
+		"group/right"
+		],
+		"drawer": {
+			"transition-duration": 300,
+			"children-class": "right-group",
+			"click-to-reveal": true
+		}
 	},
 	"group/right": {
 		"orientation": "horizontal",
@@ -90,6 +115,7 @@
 	"group/status": {
 		"orientation": "horizontal",
 		"modules": [
+			"mpris",
 			"network",
 			"bluetooth"
 		]
