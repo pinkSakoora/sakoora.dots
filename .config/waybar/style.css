@@ -18,13 +18,11 @@ tooltip label {
 }
 
 window#waybar {
-	border-radius: 0px 0px 10px 10px;
-	background-color: alpha(@background, 0.8);
+	background: none;
 }
 
 #workspaces {
-	margin: 15px 0px;
-	padding: 0px 50px;
+	margin: 15px 50px;
 	background: none;
 }
 
@@ -48,6 +46,7 @@ window#waybar {
 }
 
 #clock {
+	margin: 0px 200px 0px 160px;
 	color: @foreground;
 	font-weight: bold;
 }
@@ -58,7 +57,7 @@ window#waybar {
 	padding: 0px 80px;
 	background: @color2;
 	background: linear-gradient(90deg,@color2 0%, @color2 50%, @background 50%);
-	margin: 15px 50px 15px 0px;
+	margin: 15px 0px;
 	transition: color 0.2s linear, background 0.3s cubic-bezier(.17,.67,.3,1.35);
 }
 
@@ -95,7 +94,7 @@ window#waybar {
 		background: linear-gradient(90deg,@color1 0%, @color2 20%, @background 20%);
 	}
 	to {
-		background: linear-gradient(90deg,@color1 0%, @color2 20%, @background 20%);
+		background: linear-gradient(90deg,@color2 0%, @color2 20%, @background 20%);
 	}
 }
 
@@ -103,11 +102,89 @@ window#waybar {
 	animation: lowBlink 2s ease-in-out infinite;
 }
 
+#holder {
+	margin: 0px 50px;
+}
+
 #status {
 	color: @color1;
 	margin: 15px 25px;
 }
 
+#center {
+	background-color: alpha(@background, 0.8);
+	border-radius: 0px 0px 10px 10px;
+}
+
+#left {
+	background-color: alpha(@background, 0.8);
+	border-radius: 0px 0px 10px 0px;
+}
+
+#right {
+	background-color: alpha(@background, 0.8);
+	border-radius: 0px 0px 0px 10px;
+}
+
 #network {
 	margin: 0px 25px;
+}
+
+#power {
+	margin: 15px 20px 15px 10px;
+	padding: 0px 20px;
+	color: @color1;
+}
+
+#custom-shutdown, #custom-restart, #custom-lock, #custom-logout {
+	margin: 0px 10px;
+}
+
+#custom-term, #custom-apps {
+	margin: 15px 0px 15px 20px;
+	padding: 0px 20px;
+	color: @background;
+	background-color: @color1;
+}
+
+#custom-term {
+	margin: 15px 0px 15px 50px;
+}
+
+#audio {
+	margin: 15px 0px 15px 20px;
+	padding: 0px 10px;
+	background: @color2;
+}
+
+#brightness {
+	margin: 15px 50px 15px 20px;
+	padding: 0px 10px;
+	background: @color2;
+}
+
+#pulseaudio, #backlight {
+	color: @background;
+	padding: 0px 10px;
+}
+
+#pulseaudio-slider, #backlight-slider {
+	padding: 0px 10px;
+}
+
+#pulseaudio-slider slider, #backlight-slider slider {
+	min-height: 10px;
+	min-width: 10px;
+	background-color: @foreground;
+}
+
+#pulseaudio-slider trough, #backlight-slider trough {
+	min-height: 10px;
+	min-width: 80px;
+	background: @background;
+}
+
+#pulseaudio-slider highlight, #backlight-slider highlight {
+	min-width: 10px;
+	background: @color2;
 }

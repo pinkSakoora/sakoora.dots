@@ -40,9 +40,47 @@
 		"format-plugged": "",
 		"format": "?",
 		"format-full": "",
-		"on-click-right": "~/.config/scripts/powersaving"
+		"on-click": "~/.config/scripts/powersaving"
 	},
 	"clock": {
 		"tooltip-format": "{:%A, %d/%m/%y}"
+	},
+	"pulseaudio": {
+		"format": "{icon}",
+		"format-icons": ["󰖀","󰕾"],
+		"format-muted": "󰕿"
+	},
+	"backlight": {
+		"format": ""
+	},
+	"custom/shutdown": {
+		"format": "",
+		"on-click": "systemctl poweroff",
+		"tooltip": false
+	},
+	"custom/restart": {
+		"format": "",
+		"on-click": "systemctl reboot",
+		"tooltip": false
+	},
+	"custom/lock": {
+		"format": "",
+		"on-click": "~/.config/scripts/hyprlock-run/panels && hyprlock --grace 5",
+		"tooltip": false
+	},
+	"custom/logout": {
+		"format": "󰈆",
+		"on-click": "hyprctl dispatch exit",
+		"tooltip": false
+	},
+	"custom/term": {
+		"format": "",
+		"on-click": "hyprctl dispatch exec kitty",
+		"tooltip": false
+	},
+	"custom/apps": {
+		"format": "",
+		"on-click": "rofi -show drun",
+		"tooltip": false
 	}
 }

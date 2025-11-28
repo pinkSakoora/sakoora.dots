@@ -2,22 +2,79 @@
 	"layer": "top",
 	"position": "top",
 	"margin": "0px",
-	"spacing": 25,
-	"width": 960,
 	"fixed-center": true,
 	"modules-left": [
-		"hyprland/workspaces",
+		"group/left",
 	],
 	"modules-center": [
-		"clock"
+		"group/center"
 	],
 	"modules-right": [
-		"group/holder",
+		"group/right",
 	],
 	"reload_style_on_change": true,
 	"include": [
 		"~/.config/waybar/modules.jsonc"
 	],
+	"group/center": {
+		"orientation": "horizontal",
+		"modules": [
+		"hyprland/workspaces",
+		"clock",
+		"group/holder"
+		]
+	},
+	"group/left": {
+		"orientation": "horizontal",
+		"modules": [
+		"group/audio",
+		"group/brightness"
+		]
+	},
+	"group/right": {
+		"orientation": "horizontal",
+		"modules": [
+		"custom/term",
+		"custom/apps",
+		"group/power"
+		]
+	},
+	"group/power": {
+		"orientation": "horizontal",
+		"modules": [
+		"custom/shutdown",
+		"custom/logout",
+		"custom/lock",
+		"custom/restart"
+		],
+		"drawer": {
+			"transition-left-to-right": false,
+			"transition-duration": 300,
+			"children-class": "power-group"
+		}
+	},
+	"group/audio": {
+		"orientation": "horizontal",
+		"modules": [
+		"pulseaudio",
+		"pulseaudio/slider"
+		],
+		"drawer": {
+			"transition-duration": 300,
+			"children-class": "audio-group"
+		}
+	},
+	"group/brightness": {
+		"orientation": "horizontal",
+		"modules": [
+		"backlight",
+		"backlight/slider"
+		],
+		"drawer": {
+			"transition-duration": 300,
+			"children-class": "brightness-group"
+		}
+	},
 	"group/holder": {
 		"orientation": "horizontal",
 		"modules": [
@@ -27,14 +84,12 @@
 		"drawer": {
 			"transition-left-to-right": false,
 			"transition-duration": 300,
-			"children-class": "status-group",
-			"click-to-reveal": true
+			"children-class": "status-group"
 		}
 	},
 	"group/status": {
 		"orientation": "horizontal",
 		"modules": [
-			"mpris",
 			"network",
 			"bluetooth"
 		]
