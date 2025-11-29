@@ -1,140 +1,124 @@
 @theme "~/.cache/wal/colors-rofi-pink.rasi"
-
 configuration {
 	modes: 			"drun";
 	location:		8;
-	display-drun: 		"drun";
+	display-drun: 		"A P P L I C A T I O N S";
+	drun-display-format:	"{name}";
 	icon-theme: 		"Papirus-Dark";
 	show-icons: 		true;
+	hover-select:		true;
 }
 
 * {
 	padding:		0px;
 	margin:			0px;
 	font: 			"FiraCode Nerd Font Mono 12";
+	border-radius:		50px;
 }
 
 window {
 	transparency: 		"real";
 	location: 		"west";
 	fullscreen: 		false;
-	width:			50%;
-	height:			calc( 100% - 8px );
+	width:			640px;
+	height:			calc( 100% - 20px );
 	enabled:		true;
 	border-radius:		0px 10px 10px 0px;
 	orientation:		vertical;
-	children:		[ topcont, listview ];
-	spacing:		2%;
+	children:		[ topcont, promptbox, listview ];
+	spacing:		80px;
 }
 
 topcont {
+	margin:			20px 20px 0px 20px;
 	expand:			false;
-	orientation:		vertical;
-	children:		[ upperinfo, querybox ];
-	spacing:		2%;
-}
-
-upperinfo {
-	children:		[ dummy, textbox-info ];
 	orientation:		horizontal;
-	border:			0px 0px 2px 0px;
-}
-
-dummy {
-	expand:			true;
-	padding:		12px;
-}
-
-querybox {
-	orientation:		horizontal;
-	margin:			0 0 0 2%;
-	children:		[ inputbar, promptbox ];
+	children:		[ inputbar, packages ];
+	spacing:		60px;
 }
 
 inputbar {
+	padding:		10px 0px;
 	expand:			true;
-	children:		[ searchbox, entrybox ];
-	border-radius:		10px;
-	margin:			0 10% 0 0;
+	children:		[ textbox-search, entrybox ];
+	border-radius:		50px;
 }
 
-searchbox {
-	expand:			false;
-	orientation:		vertical;
-	children:		[ sdummy, textbox-search, sdummy ];
-}
-
-sdummy {
+dummy {
 	expand:			true;
 }
 
 entrybox {
 	expand:			true;
-	orientation:		vertical;
-	children:		[ sdummy, entry, sdummy ];
+	children:		[ dummy, entry, dummy ];
+}
+
+entry {
+	expand:			false;
+	margin:			0px 0px 0px 20px;
+	border-radius:		0px;
 }
 
 textbox-search {
 	content:		"  ";
-	font:			"Josefin Sans 24";
+	font:			"Fira Code Nerd Font Mono 16";
 	expand:			false;
+}
+
+packages {
+	padding:		0px 20px;
+	children:		[ dummy, textbox-packages, dummy ];
+	expand:			false;
+}
+
+textbox-packages {
+	expand:			false;
+	content:		"⚠";
 }
 
 promptbox {
-	children:		[ pdummy, prompt, pdummy ];
-	orientation:		vertical;
 	expand:			false;
-	margin:			0 calc( 2% + 8px ) 0 10%;
+	orientation:		horizontal;
+	children:		[ dummy, prompt, dummy ];
 }
 
 prompt {
-	expand:			true;
-	font:			"Josefin Sans Bold 48";
-}
-
-pdummy {
-	expand:			false;
-	padding:		2px;
+	font:			"Josefin Sans 22";
 }
 
 listview {
-	margin:			1% 10px 10px 2%;
-	columns: 		1;
+	margin:			0px 20px 20px 20px;
+	columns:		1;
 	dynamic:		true;
 	scrollbar:		true;
-	scrollbar-width:	10px;
+	scrollbar-wdith:	10px;
 	cycle:			true;
-	spacing:		0px;
+	spacing:		10px;
 	layout:			vertical;
 	reverse:		false;
-	flow:			horizontal;
-	fixed-columns:		false;
+	fixed-colums:		false;
 	require-input:		false;
-	border-radius:		10px;
+	border-radius:		0px;
 }
 
 scrollbar {
-	margin:			10px 0px 10px 1%;
+	margin:			0px 0px 0px 10px;
 	handle-width:		10px;
 	border-radius:		10px;
 	handle-rounded-corners:	true;
 }
 
 element {
-	children:		[ element-icon, element-text ];
-	orientation:		horizontal;
-	padding:		10px;
-	border-radius:		10px;
+	children:		[ element-text, element-icon ];
+}
+
+element-text {
+	font:			"Fira Code Nerd Font Mono 17";
+	padding:		20px 100px;
 }
 
 element-icon {
-	size:			48;
-	border-radius:		10px;
-}
-
-textbox-info {
-	padding:		4px 0px 6px 0px;
-	expand:			true;
-	content:		"There seems to be some issue in loading info text, check if ~/.config/rofi/text.rasi exists?";
+	size:			40px;
+	padding:		10px;
 }
 @import "./text.rasi"

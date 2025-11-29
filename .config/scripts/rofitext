@@ -1,23 +1,4 @@
-#!/bin/zsh
-
-# Fetch value of variables
-# Echo the same into ~/.config/rofi/text.rasi
-
-info_fetch() {
-	# 1. Username is $USER
-	# 2. PRETTY_NAME
-	pretty_name=$(cat /etc/*-release | grep PRETTY_NAME | cut -d'"' -f2)
-	# 3. WM name is $XDG_CURRENT_DESKTOP
-	# 4. Uptime
-	uptime=$(uptime -p)
-	# 5. Package numbers
-	pacnum=$(pacman -Q | wc -l)
-}
-
-put_into() {
-	echo -e "textbox-info {\ncontent:\"$USER on $pretty_name running $XDG_CURRENT_DESKTOP\\\n$uptime, $pacnum packages installed.\";\n}" > "$HOME/.config/rofi/text.rasi" 
-}
-
-info_fetch
-[ "$XDG_CURRENT_DESKTOP" != "" ] && put_into
+#!/bin/sh
+pacnum=$(pacman -Q | wc -l)
+printf "textbox-packages {\ncontent:\"󰏓 %s\";\n}" "$pacnum" > "$HOME/.config/rofi/text.rasi" 
 rofi -show drun
