@@ -10,7 +10,7 @@
 		}
 	},
 	"bluetooth": {
-		"tooltip-format": "{status}",
+		"tooltip-format": "Status: {status}",
 		"tooltip-format-connected": "{device_alias}",
 		"format": "",
 		"format-connected": "󰂱",
@@ -48,45 +48,49 @@
 	"pulseaudio": {
 		"format": "{icon}",
 		"format-icons": ["󰖀","󰕾"],
-		"format-muted": "󰕿"
+		"format-muted": "󰕿",
+		"tooltip-format": "{volume}%"
 	},
 	"backlight": {
-		"format": ""
+		"format": "",
+		"tooltip-format": "{percent}%"
 	},
 	"custom/shutdown": {
 		"format": "",
 		"on-click": "systemctl poweroff",
-		"tooltip": false
+		"tooltip-format": "Shutdown"
 	},
 	"custom/restart": {
 		"format": "",
 		"on-click": "systemctl reboot",
-		"tooltip": false
+		"tooltip-format": "Restart"
 	},
 	"custom/lock": {
 		"format": "",
 		"on-click": "~/.config/scripts/hyprlock-run/panels && hyprlock --grace 5",
-		"tooltip": false
+		"tooltip-format": "Lock"
 	},
 	"custom/logout": {
 		"format": "󰈆",
 		"on-click": "hyprctl dispatch exit",
-		"tooltip": false
+		"tooltip-format": "Log out"
 	},
 	"custom/term": {
 		"format": "",
 		"on-click": "hyprctl dispatch exec kitty",
-		"tooltip": false
+		"tooltip-format": "Terminal"
 	},
 	"custom/apps": {
 		"format": "",
 		"on-click": "rofi -show drun",
-		"tooltip": false
+		"tooltip-format": "Apps"
 	},
 	"custom/rightexpander": {
-		"format": "󰅁"
+		"format": "󰅁",
+		"tooltip": false
 	},
 	"custom/leftexpander": {
-		"format": "󰅂"
+		"format": "󰅂",
+		"tooltip": false
 	}
 }
