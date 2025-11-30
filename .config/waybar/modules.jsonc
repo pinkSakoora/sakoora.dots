@@ -15,7 +15,8 @@
 		"format": "",
 		"format-connected": "󰂱",
 		"format-on": "󰂯",
-		"format-off": "󰂲"
+		"format-off": "󰂲",
+		"on-click": "kitty bluetui"
 	},
 	"network": {
 		"format": "{icon}",
@@ -24,7 +25,8 @@
 		"format-disconnected": "󰌺",
 		"tooltip-format-wifi": "{essid} ({signalStrength}%)",
 		"tooltip-format-ethernet": "Down: {bandwidthDownBytes} Up: {bandwidthUpBytes}",
-		"tooltip-format-disconnected": "Disconnected"
+		"tooltip-format-disconnected": "Disconnected",
+		"on-click": "kitty nmtui"
 	},
 	"battery": {
 		"tooltip-format": "{capacity}% ({timeTo})",

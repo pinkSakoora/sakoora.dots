@@ -113,7 +113,7 @@ element {
 }
 
 element-text {
-	font:			"Fira Code Nerd Font Mono 17";
+	font:			"Kulim Park 17";
 	padding:		20px 100px;
 }
 
