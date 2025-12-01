@@ -1,0 +1,31 @@
+#!/bin/sh
+
+send_notification() {
+	percent=$(expr $(brightnessctl g) \* 100 / $(brightnessctl m))
+	case "$1" in
+		"-i" )
+			notify-send -h int:value:"$percent" -h string:x-canonical-private-synchronous:brightness -u low --app-name="brightness control" "Brightness increased" "Brightness: $percent";;
+		"-d" )
+			notify-send -h int:value:"$percent" -h string:x-canonical-private-synchronous:brightness -u low --app-name="brightness control" "Brightness decreased" "Brightness: $percent";;
+		"-min" )
+			notify-send -h string:x-canonical-private-synchronous:brightness -u low --app-name="brightness control" "Brightness decreased" "Minimum brightness";;
+		"-max" )
+			notify-send -h int:value:100 -h string:x-canonical-private-synchronous:brightness -u low --app-name="brightness control" "Brightness increased" "Maximum brightness";;
+	esac
+}
+
+if [ "$1" = "--increase" ]; then
+	if [ "$(brightnessctl g)" = "$(brightnessctl m)" ]; then
+		send_notification -max
+	else
+		brightnessctl -q set +5%
+		send_notification -i
+	fi
+elif [ "$1" = "--decrease" ]; then
+	if [ "$(brightnessctl g)" = "0" ]; then
+		send_notification -min
+	else
+		brightnessctl -q set 5%-
+		send_notification -d
+	fi
+fi
