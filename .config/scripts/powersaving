@@ -1,13 +1,13 @@
-#!/bin/zsh
+#!/bin/sh
 
-cd /home/pinksakoora/.config/hypr/
-if [[ -f ./hyprland-powersaving.conf ]]; then
+cd "$HOME"/.config/hypr/ || { notify-send "Alert" "There was an error finding \"$HOME/.config/hypr\""; exit; }
+if [ -f ./hyprland-powersaving.conf ]; then
 	mv ./hyprland.conf ./hyprland-normal.conf
 	mv ./hyprland-powersaving.conf ./hyprland.conf
 	brightnessctl -q s 20%
 	hyprctl reload
 	notify-send "Powersaving on"
-elif [[ -f ./hyprland-normal.conf ]]; then
+elif [ -f ./hyprland-normal.conf ]; then
 	mv ./hyprland.conf ./hyprland-powersaving.conf
 	mv ./hyprland-normal.conf ./hyprland.conf
 	hyprctl reload

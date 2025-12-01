@@ -1,28 +1,17 @@
-#!/bin/zsh
+#!/bin/sh
 
-EXT_1=".png"
-EXT_2=".jpg"
-WALLDIR=~/Pictures/Wallpapers/
+walldir="$HOME/Pictures/Wallpapers"
 
-ls $WALLDIR
-printf "Enter wallpaper name from above: "
-read wallname
-if [ -f $WALLDIR$wallname$EXT_1 ]; then
-	wal -i $WALLDIR$wallname$EXT_1 -nq
-	swww img -t outer $WALLDIR$wallname$EXT_1
-	pywalfox update
-	printf "\nSetting $wallname as wallpaper.\n"
-elif [ -f $WALLDIR$wallname$EXT_2 ]; then
-	wal -i $WALLDIR$wallname$EXT_2 -nq
-	swww img -t outer $WALLDIR$wallname$EXT_2
-	pywalfox update
-	printf "\nSetting $wallname as wallpaper.\n"
-elif [ -f $WALLDIR$wallname ]; then
-	wal -i $WALLDIR$wallname -nq
-	swww img -t outer $WALLDIR$wallname
-	pywalfox update
-	printf "\nSetting $wallname as wallpaper.\n"
-else
-	printf "\n $wallname: invalid filename!\n"
+if [ ! -d "$walldir" ]; then
+	printf "Wallpaper directory (%s) wasn't found!" "$walldir"
+	exit 1
 fi
-
+selected_file=$(fd . "$walldir" | fzf --no-color --height=80% --min-height=6 --border=rounded --header="Select wallpaper" --header-first --with-nth 6 --delimiter /)
+if [ ! -f "$selected_file" ]; then
+	printf "Invalid filename: %s\n" "$selected_file"
+	exit 2
+fi
+wal -i "$selected_file" -nq
+swww img -t outer "$selected_file"
+wallname=$(echo "$selected_file" | cut -d/ -f6)
+printf "Setting %s as wallpaper.\n" "$wallname"
