@@ -1,14 +1,14 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-dotpath="/home/$USER/.dotfiles"
-flagpath="/home/$USER/.dotfiles/flaglist.sh"
-pkglist="/home/$USER/.dotfiles/pkglist.txt"
-yaypkglist="/home/$USER/.dotfiles/foreignpkglist.txt"
-configfolder="/home/$USER/.config"
+dotpath="$HOME"/.dotfiles
+flagpath="$HOME"/.dotfiles/flaglist.sh
+pkglist="$HOME"/.dotfiles/pkglist.txt
+yaypkglist="$HOME"/.dotfiles/foreignpkglist.txt
+configfolder="$HOME"/.config
 
 modifiedconfigs=("/hypr" "/mako" "/fastfetch" "/kitty" "/waybar" "/rofi" "/scripts" "/starship.toml" "/wal")
 
-source $flagpath
+source "$flagpath"
 
 s_noyay="0"
 alertsign="[ \033[1m!\033[0m ]"
@@ -19,8 +19,7 @@ questionsign="[ \033[1m?\033[0m ]"
 
 case "$1" in
 	"-noyay" ) 
-		s_noyay="1"
-		break;;
+		s_noyay="1";;
 esac
 
 bigtext() {
@@ -51,47 +50,37 @@ while true; do
 	response="${response:-$defaultresponse}"
 	case "$response" in
 		[Yy]* )
-			return 0
-			;;
+			return 0;;
 		[Nn]* )
-			return 1
-			;;
+			return 1;;
 		* )
-			echo "Invalid input."
-			;;
+			echo "Invalid input.";;
 	esac
 done
 }
 
 execute() {
-$@ |& tee $logfile
+"$@" |& tee "$logfile"
 exitcode=${PIPESTATUS[0]}
-return $exitcode
+return "$exitcode"
 }
 
 command_fail() {
 case "$1" in
 	1 )
-		echo -e "$alertsign Failed to update pacman db. Pacman exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to update pacman db. Pacman exit code: $exitcode";;
 	2 )
-		echo -e "$alertsign Failed to install pacman packages. Pacman exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to install pacman packages. Pacman exit code: $exitcode";;
 	3 )
-		echo -e "$alertsign Failed to clone yay repository. Git exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to clone yay repository. Git exit code: $exitcode";;
 	4 )
-		echo -e "$alertsign Failed to build yay. Makepkg exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to build yay. Makepkg exit code: $exitcode";;
 	5 )
-		echo -e "$alertsign Failed to generate development package database. Yay exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to generate development package database. Yay exit code: $exitcode";;
 	6 )
-		echo -e "$alertsign Failed to update development packages. Yay exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to update development packages. Yay exit code: $exitcode";;
 	7 )
-		echo -e "$alertsign Failed to install required AUR packages. Yay exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to install required AUR packages. Yay exit code: $exitcode";;
 	8 )
 		echo -e "$infosign Exiting installer on user prompt [Pre-installation exit: 8]"
 		exit 8;;
@@ -102,24 +91,20 @@ case "$1" in
 		echo -e "$infosign Exiting installer on user prompt [Configuration swap aborted: 10]"
 		exit 10;;
 	11 )
-		echo -e "$alertsign Failed to change default login shell to zsh. Chsh exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to change default login shell to zsh. Chsh exit code: $exitcode";;
 	12 )
-		echo -e "$alertsign Failed to clone zsh-syntax-highlighting repository. Git exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to clone zsh-syntax-highlighting repository. Git exit code: $exitcode";;
 	13 )
-		echo -e "$alertsign Failed to clone zsh-autosuggestions repository. Git exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to clone zsh-autosuggestions repository. Git exit code: $exitcode";;
 	14 )
-		echo -e "$alertsign Failed to clone zsh-history-substring-search repository. Git exit code: $exitcode"
-		break;;
+		echo -e "$alertsign Failed to clone zsh-history-substring-search repository. Git exit code: $exitcode";;
 	15 )
 		echo -e "$alertsign Hyprland is not running on current tty, launch Hyprland to continue. [Hyprland not running: 15]"
 		exit 15;;
 esac
 echo "Failed command logged in file located at \"$logfile\""
 echo "Installation failed with status: $1"
-exit $1
+exit "$1"
 }
 
 test_tty() {
@@ -192,7 +177,7 @@ show_progress() {
 		0 )
 			return;;
 		1 )
-			command_fail 8
+			command_fail 8;;
 	esac
 }
 
@@ -200,8 +185,8 @@ pacman_install() {
 	echo "Installing all required packages..."
 	echo 
 	execute sudo pacman -Syu --noconfirm || command_fail 1
-	execute sudo pacman -S --needed --noconfirm - < $pkglist || command_fail 2
-	sed -i 's/s_pacman="0"/s_pacman="1"/' $flagpath
+	execute sudo pacman -S --needed --noconfirm - < "$pkglist" || command_fail 2
+	sed -i 's/s_pacman="0"/s_pacman="1"/' "$flagpath"
 	return
 }
 
@@ -210,16 +195,16 @@ setup_yay() {
 	confirm "Do you want to install yay now?"
 	case $? in
 		0 ) 
-			break;;
+			;;
 		1 ) 
 			echo -e "$infosign If you wish to skip installing yay (because you use a different AUR helper or otherwise), use -noyay flag when launching the installer."
-			command_fail 9
+			command_fail 9;;
 	esac
 	echo "Setting up yay..."
 	execute git clone https://aur.archlinux.org/yay.git || command_fail 3
-	cd ~/yay
+	cd "$HOME"/yay
 	execute makepkg -si || command_fail 4
-	cd ~
+	cd "$HOME"
 	echo "Yay has been installed."
 	return
 }
@@ -228,32 +213,32 @@ yay_install() {
 	echo "Installing yay packages..."
 	execute yay -Y --gendb --noconfirm || command_fail 5
 	execute yay -Syu --devel --noconfirm || command_fail 6
-	execute yay -S --needed --noconfirm - < $yaypkglist || command_fail 7
-	sed -i 's/s_yay="0"/s_yay="1"/' $flagpath
+	execute yay -S --needed --noconfirm - < "$yaypkglist" || command_fail 7
+	sed -i 's/s_yay="0"/s_yay="1"/' "$flagpath"
 	echo "AUR packages installed."
 	return
 }
 
 setup_zsh() {
-	local zshdir="/home/$USER/.zsh"
+	local zshdir="$HOME/.zsh"
 	echo "$SHELL" | grep -sq zsh
 	if [ "$?" = "1" ]; then
 		echo "Changing login shell to zsh..."
-		execute sudo chsh -s /usr/bin/zsh $USER || command_fail 11
+		execute sudo chsh -s /usr/bin/zsh "$USER" || command_fail 11
 	else
 		echo "Login shell already set to zsh."
 	fi
 
 	append_suffix "$zshdir" "-pre-sakoora"
-	mkdir $zshdir
-	execute git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $zshdir/zsh-syntax-highlighting || command_fail 12
-	execute git clone https://github.com/zsh-users/zsh-autosuggestions $zshdir/zsh-autosuggestions || command_fail 13
-	execute git clone https://github.com/zsh-users/zsh-history-substring-search $zshdir/zsh-history-substring-search || command_fail 14
+	mkdir "$zshdir"
+	execute git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$zshdir"/zsh-syntax-highlighting || command_fail 12
+	execute git clone https://github.com/zsh-users/zsh-autosuggestions "$zshdir"/zsh-autosuggestions || command_fail 13
+	execute git clone https://github.com/zsh-users/zsh-history-substring-search "$zshdir"/zsh-history-substring-search || command_fail 14
 
-	append_suffix "/home/$USER/.zshrc" "-pre-sakoora"
-	mv $dotpath/.zshrc /home/$USER/.zshrc
+	append_suffix "$HOME"/.zshrc "-pre-sakoora"
+	mv "$dotpath"/.zshrc "$HOME"/.zshrc
 
-	sed -i 's/s_zsh="0"/s_zsh="1"/' $flagpath
+	sed -i 's/s_zsh="0"/s_zsh="1"/' "$flagpath"
 	return
 }
 
@@ -261,9 +246,9 @@ config_change() {
 	confirm "Proceed with changing configs?"
 	case $? in
 		0 )
-			break;;
+			;;
 		1 )
-			command_fail 10
+			command_fail 10;;
 	esac
 
 	echo "Renaming preexisting config files..."
@@ -274,14 +259,14 @@ config_change() {
 	echo "Old config files have been renamed to [config_folder]-pre-sakoora."
 
 	echo "Moving config files from .dotfiles to required location..."
-	mv $dotpath/.config/* $configfolder/
+	mv "$dotpath"/.config/* "$configfolder"/
 	echo "Done!"
 
 	echo "Moving required font files to ~/.local/share/fonts/"
-	mkdir -p /home/$USER/.local/share/fonts
-	mv $dotpath/fonts/* /home/$USER/.local/share/fonts
+	mkdir -p "$HOME"/.local/share/fonts
+	mv "$dotpath"/fonts/* "$HOME"/.local/share/fonts
 	echo "Moved!"
-	sed -i 's/s_config="0"/s_config="1"/' $flagpath
+	sed -i 's/s_config="0"/s_config="1"/' "$flagpath"
 	return
 }
 
@@ -373,7 +358,7 @@ hyprlock() {
 		echo "bottom_left_size=$((pw))x$((pw/2))"
 		echo "right_size=$((pw))x$((pw*2))"
 	} >> "$sizefile"
-	sed -i 's/s_hyprlock="0"/s_hyprlock="1"/' $flagpath
+	sed -i 's/s_hyprlock="0"/s_hyprlock="1"/' "$flagpath"
 	return
 }
 
@@ -381,22 +366,22 @@ wallpapers() {
 	confirm "Do you want wallpapers?"
 	case "$?" in
 		0 )
-			break;;
+			;;
 		1 )
-			echo "wallset command requires any wallpapers to be located in /home/$USER/Pictures/Wallpapers/ for it to work."
+			echo "wallset command requires any wallpapers to be located in $HOME/Pictures/Wallpapers/ for it to work."
 			return;;
 	esac
-	git clone --single-branch --branch media https://github.com/pinkSakoora/.dotfiles.git $dotpath/walls
-	mkdir -p /home/$USER/Pictures/Wallpapers
-	mv $dotpath/walls/Wallpapers/* /home/$USER/Pictures/Wallpapers/
+	git clone --single-branch --branch media https://github.com/pinkSakoora/.dotfiles.git "$dotpath"/walls
+	mkdir -p "$HOME"/Pictures/Wallpapers
+	mv "$dotpath"/walls/Wallpapers/* "$HOME"/Pictures/Wallpapers/
 	echo "Wallpapers moved!"
 	echo "Set a wallpaper using wallset command in terminal. wallset runs pywal which is needed for waybar to load."
-	sed -i 's/s_walls="0"/s_walls="1"/' $flagpath
+	sed -i 's/s_walls="0"/s_walls="1"/' "$flagpath"
 }
 
 main() {
-logfile="/home/$USER/.dotfiles/s_info$$.log"
-touch $logfile
+logfile="$HOME/.dotfiles/s_info$$.log"
+touch "$logfile"
 bigtext
 show_progress
 [ "$s_pacman" = "0" ] && \
@@ -422,6 +407,6 @@ echo "Reboot your system and log into hyprland to enjoy your new config."
 exit
 }
 
-cd ~
+cd "$HOME"
 clear
 main
