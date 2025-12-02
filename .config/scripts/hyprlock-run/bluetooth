@@ -15,7 +15,7 @@ name() {
 		1)
 			name="Disconnected";;
 		2 )
-			name=$(bluetoothctl devices Connected | cut -d " " -f3-);;
+			name=$(bluetoothctl devices Connected | head -n 1 | cut -d " " -f3-);;
 	esac
 	if [ "${#name}" -gt "12" ]; then
 		name="$(echo "$name" | cut -c1-9)..."

@@ -103,7 +103,7 @@ window#waybar {
 }
 
 #battery.low:not(.charging) {
-	animation: lowBlink 2s ease-in-out infinite;
+	animation: lowBlink 2s ease-in-out 5;
 }
 
 #holder {
