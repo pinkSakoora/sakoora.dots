@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-dotpath="$HOME"/.dotfiles
-flagpath="$HOME"/.dotfiles/flaglist.sh
-pkglist="$HOME"/.dotfiles/pkglist.txt
-yaypkglist="$HOME"/.dotfiles/foreignpkglist.txt
+dotpath="$(dirname "$(readlink -f "$0")")"
+flagpath="$dotpath"/flaglist.sh
+pkglist="$dotpath"/pkglist.txt
+yaypkglist="$dotpath"foreignpkglist.txt
 configfolder="$HOME"/.config
 
 modifiedconfigs=("/hypr" "/mako" "/fastfetch" "/kitty" "/waybar" "/rofi" "/scripts" "/starship.toml" "/wal")
@@ -380,7 +380,8 @@ wallpapers() {
 }
 
 main() {
-logfile="$HOME/.dotfiles/s_info$$.log"
+echo "$dotpath"
+logfile="$dotpath/s_info$$.log"
 touch "$logfile"
 bigtext
 show_progress
