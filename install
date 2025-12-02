@@ -3,7 +3,7 @@
 dotpath="$(dirname "$(readlink -f "$0")")"
 flagpath="$dotpath"/flaglist.sh
 pkglist="$dotpath"/pkglist.txt
-yaypkglist="$dotpath"foreignpkglist.txt
+yaypkglist="$dotpath"/foreignpkglist.txt
 configfolder="$HOME"/.config
 
 modifiedconfigs=("/hypr" "/mako" "/fastfetch" "/kitty" "/waybar" "/rofi" "/scripts" "/starship.toml" "/wal")
