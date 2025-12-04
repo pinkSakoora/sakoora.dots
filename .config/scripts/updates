@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Internet check
+while true; do
+	ping -c 3 -w 5 1.1.1.1 > /dev/null 2>&1 || { sleep 5; continue; }
+	break
+done
+
+# Pacman db lock check
+while true; do
+	if [ -f "/var/lib/pacman/db.lck" ]; then
+		sleep 1
+	else
+		break
+	fi
+done
+
+# Yay error check
+if yay -Qu > /dev/null 2>&1; then
+	num_updates="$(yay -Qu | wc -l)"
+else
+	num_updates="-1"
+fi
+
+if [ "$num_updates" -eq "-1" ]; then
+	notify-send -u critical --app-name="alerts" "Error!" "There was a problem fetching updates."
+	exit
+fi
+	
+notify-send -t 0 -u critical --app-name="updates" "Updates available!" "There are $num_updates packages that have updates!\nLeft-click to start update\nRight-click to dismiss notification"

@@ -20,3 +20,7 @@ default-timeout=6000
 
 max-visible=8
 layer=overlay
+
+[app-name="updates"]
+on-button-left=exec hyprctl dispatch exec kitty yay && makoctl dismiss -n "$id"
+on-button-right=dismiss
