@@ -22,5 +22,5 @@ max-visible=8
 layer=overlay
 
 [app-name="updates"]
-on-button-left=exec hyprctl dispatch exec kitty yay && makoctl dismiss -n "$id"
+on-button-left=exec hyprctl dispatch exec kitty "sudo pacman -Syu" && makoctl dismiss -n "$id"
 on-button-right=dismiss

@@ -15,16 +15,22 @@ while true; do
 	fi
 done
 
-# Yay error check
-if yay -Qu > /dev/null 2>&1; then
-	num_updates="$(yay -Qu | wc -l)"
+# Error check
+checkupdates > /dev/null 2>&1
+code="$?"
+if [ "$code" -eq "0" ]; then
+	num_updates="$(checkupdates | wc -l)"
 else
 	num_updates="-1"
+	if [ "$code" -eq "2" ]; then
+		num_updates="0"
+	fi
 fi
 
 if [ "$num_updates" -eq "-1" ]; then
 	notify-send -u critical --app-name="alerts" "Error!" "There was a problem fetching updates."
-	exit
+elif [ "$num_updates" -eq "0" ]; then
+	notify-send -u critical --app-name="alerts" "No updates" "Your system is up to date. (AUR packages were not checked)"
+else
+	notify-send -t 0 -u critical --app-name="updates" "Updates available!" "There are $num_updates packages that have updates! (AUR packages not included)\n<span size='small'>Left-click to start update\nRight-click to dismiss notification</span>"
 fi
-	
-notify-send -t 0 -u critical --app-name="updates" "Updates available!" "There are $num_updates packages that have updates!\nLeft-click to start update\nRight-click to dismiss notification"

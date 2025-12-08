@@ -25,6 +25,7 @@ mako
 meson
 nautilus
 networkmanager
+pacman-contrib
 pamixer
 pkg-config
 playerctl
