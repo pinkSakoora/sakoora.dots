@@ -1,17 +1,18 @@
 #!/bin/sh
 
-cd "$HOME"/.config/hypr/ || { notify-send "Alert" "There was an error finding \"$HOME/.config/hypr\""; exit; }
-if [ -f ./hyprland-powersaving.conf ]; then
-	mv ./hyprland.conf ./hyprland-normal.conf
-	mv ./hyprland-powersaving.conf ./hyprland.conf
-	brightnessctl -q s 20%
-	hyprctl reload
-	notify-send "Powersaving on"
-elif [ -f ./hyprland-normal.conf ]; then
-	mv ./hyprland.conf ./hyprland-powersaving.conf
-	mv ./hyprland-normal.conf ./hyprland.conf
-	hyprctl reload
-	notify-send "Powersaving off"
+animation=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
+if [ "$animation" = 1 ]; then
+	hyprctl --batch "\
+		keyword animations:enabled 0;\
+		keyword animation borderangle,0;\
+		keyword decoration:shadow:enabled 0;\
+		keyword decoration:blur:enabled 0;\
+		keyword decoration:active_opacity 1;\
+		keyword decoration:inactive_opacity 1;"
+	brightnessctl -s set 40%
+	notify-send -u low --app-name="power control" "Powersaving on" "Decorations and animations have been disabled."
 else
-	echo "No secondary config found!"
+	hyprctl reload
+	brightnessctl -r
+	notify-send -u low --app-name="power control" "Powersaving off" "Configuration has been reloaded to default."
 fi
