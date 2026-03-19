@@ -6,7 +6,7 @@ pkglist="$dotpath"/pkglist.txt
 yaypkglist="$dotpath"/foreignpkglist.txt
 configfolder="$HOME"/.config
 
-modifiedconfigs=("/hypr" "/mako" "/fastfetch" "/kitty" "/waybar" "/rofi" "/scripts" "/starship.toml" "/wal")
+modifiedconfigs=("/hypr" "/mako" "/fastfetch" "/kitty" "/waybar" "/rofi" "/starship.toml" "/wal")
 
 source "$flagpath"
 
