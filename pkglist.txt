@@ -1,4 +1,5 @@
 archlinux-xdg-menu
+awww
 brightnessctl
 bluetui
 bluez
@@ -34,7 +35,6 @@ qt5-wayland
 qt6-wayland
 rofi
 starship
-swww
 ttf-firacode-nerd
 ttf-noto-nerd
 waybar

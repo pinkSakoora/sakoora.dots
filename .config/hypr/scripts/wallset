@@ -12,6 +12,6 @@ if [ ! -f "$selected_file" ]; then
 	exit 2
 fi
 wal -i "$selected_file" -nq
-swww img -t outer "$selected_file"
+awww img -t outer "$selected_file"
 wallname=$(echo "$selected_file" | cut -d/ -f6)
 printf "Setting %s as wallpaper.\n" "$wallname"
